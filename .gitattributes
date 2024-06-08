@@ -1,1 +1,66 @@
+# Set default behavior to automatically normalize line endings.
+* text=auto
+
+# Handle line endings for specific file types
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.xml text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Handle binary files
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.bmp binary
+*.tiff binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+*.flac binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.rar binary
+*.7z binary
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# Handle files that should not be modified
 *.pbxproj -text
+
+# Handle shell scripts
+*.sh text eol=lf
+
+# Handle batch files
+*.bat text eol=crlf
+
+# Handle Windows specific files
+*.ps1 text eol=crlf
+
+# Handle configuration files
+*.conf text eol=lf
+*.config text eol=lf
+*.ini text eol=lf
+
+# Handle project-specific files
+*.csproj text eol=lf
+*.sln text eol=lf
+
+# Handle any other file types as needed
+# Add more file types and rules as necessary
