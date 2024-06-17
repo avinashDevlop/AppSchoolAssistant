@@ -1,18 +1,16 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const StudentAndTeacherHome = ({ navigation, route }) => {
-  const { name, selectedClass, selectedSection, gender,surname } = route.params;
-  const studentDetails = {...route.params};
-   const [fullName, setFullName] = useState(`${surname} ${name}`);
-   const [name1, setname1] = useState(`${name}`);
-   const [section,setSection] = useState("");
- 
-//  console.log(fullName)
+  const { name, selectedClass, selectedSection, gender, surname } = route.params;
+  const studentDetails = { ...route.params };
+  const [fullName] = useState(`${surname} ${name}`);
+
   const handleLogout = () => {
-    navigation.navigate("School Assistant"); 
+    navigation.navigate("School Assistant");
   };
+
   const features = [
     {
       destination: "StudentAttendance",
@@ -48,14 +46,16 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
 
   const FeatureItem = ({ destination, name, iconName }) => {
     const handleFeaturePress = () => {
-      if (destination === "StudentAttendance" ) {
-        if(selectedSection === 'Section A'){
-          setSection('A')
-        }else if(selectedSection === 'Section B'){
-          setSection('B')
-        }else{
-          setSection('C')
+      if (destination === "StudentAttendance") {
+        let section;
+        if (selectedSection === 'Section A') {
+          section = 'A';
+        } else if (selectedSection === 'Section B') {
+          section = 'B';
+        } else {
+          section = 'C';
         }
+
         const studentData = {
           className: selectedClass,
           section: section,
@@ -63,37 +63,36 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
           gender: gender,
         };
         navigation.navigate(destination, studentData);
-      }else if(destination === 'StudentHomeWork' || destination === 'StudentExamSchedule' || destination==='StudentTimeTable' || destination === 'StudentChat'){
+      } else if (destination === 'StudentHomeWork' || destination === 'StudentExamSchedule' || destination === 'StudentTimeTable' || destination === 'StudentChat') {
         const studentData = {
           className: selectedClass,
           section: selectedSection,
         };
         navigation.navigate(destination, studentData);
-      }else if (destination === "Student Exam Result" ) {
+      } else if (destination === "Student Exam Result") {
         const studentData = {
           selectedClass,
-          selectedSection:selectedSection,
-          studentName: name1,
+          selectedSection: selectedSection,
+          studentName: name,
           gender: gender,
         };
         navigation.navigate(destination, studentData);
-      }else if(destination === 'Student Profile'){
-        let index =1;
-        navigation.navigate(destination, studentDetails,index);
-      }else if(destination === 'TrackStudBus'){
+      } else if (destination === 'Student Profile') {
+        let index = 1;
+        navigation.navigate(destination, studentDetails, index);
+      } else if (destination === 'TrackStudBus') {
         const studentData = {
-          className:selectedClass,
-          sectionName:selectedSection,
+          className: selectedClass,
+          sectionName: selectedSection,
           studentName: fullName,
         };
         navigation.navigate(destination, studentData);
-      }
-      else{
+      } else {
         // Navigate to other screens without additional data
         navigation.navigate(destination);
       }
     };
-  
+
     return (
       <TouchableOpacity
         style={styles.featureItem}
@@ -104,7 +103,6 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
       </TouchableOpacity>
     );
   };
-  
 
   return (
     <View style={styles.container}>
@@ -122,7 +120,7 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
 
       <View style={styles.content}>
         <View style={styles.featuresContainer}>
-          {features.map((feature,_key) => (
+          {features.map((feature) => (
             <FeatureItem
               key={feature.destination}
               destination={feature.destination}
@@ -181,7 +179,7 @@ const styles = StyleSheet.create({
   featuresContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between", // Adjust this to control spacing between features
+    justifyContent: "space-between",
     width: "100%",
   },
   featureItem: {

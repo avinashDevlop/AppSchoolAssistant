@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 
 const StudentAttendance = ({ route }) => {
   const { className, gender, name, section } = route.params;
@@ -11,66 +12,68 @@ const StudentAttendance = ({ route }) => {
   const [noOfPresents, setNoOfPresents] = useState(0);
   const [noOfAbsents, setNoOfAbsents] = useState(0);
   const [computedWorkingDays, setComputedWorkingDays] = useState(0);
+console.log(route.params)
+  const fetchAttendanceData = async () => {
+    try {
+      const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${className}/Section ${section}.json`);
+      const data = response.data;
 
-  useEffect(() => {
-    const fetchAttendanceData = async () => {
-      try {
-        const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${className}/Section ${section}.json`);
-        const data = response.data;
+      const monthMap = {
+        "january": "01",
+        "february": "02",
+        "march": "03",
+        "april": "04",
+        "may": "05",
+        "june": "06",
+        "july": "07",
+        "august": "08",
+        "september": "09",
+        "october": "10",
+        "november": "11",
+        "december": "12"
+      };
 
-        const monthMap = {
-          "january": "01",
-          "february": "02",
-          "march": "03",
-          "april": "04",
-          "may": "05",
-          "june": "06",
-          "july": "07",
-          "august": "08",
-          "september": "09",
-          "october": "10",
-          "november": "11",
-          "december": "12"
-        };
+      const formattedData = {};
+      let presentCount = 0;
+      let absentCount = 0;
+      let workingDaysCount = 0;
 
-        const formattedData = {};
-        let presentCount = 0;
-        let absentCount = 0;
-        let workingDaysCount = 0;
+      for (const month in data) {
+        for (const date in data[month]) {
+          const attendanceRecord = data[month][date];
+          const formattedDate = `${presentYear}-${monthMap[month.toLowerCase()]}-${date.split('_')[1]}`;
 
-        for (const month in data) {
-          for (const date in data[month]) {
-            const attendanceRecord = data[month][date];
-            const formattedDate = `${presentYear}-${monthMap[month.toLowerCase()]}-${date.split('_')[1]}`;
-
-            if (attendanceRecord.isHoliday) {
-              formattedData[formattedDate] = { selected: true, marked: false, selectedColor: '#B38A3C' }; // Yellow for Holiday
-            } else {
-              workingDaysCount++;
-              if (attendanceRecord.present && attendanceRecord.present.includes(name)) {
-                formattedData[formattedDate] = { selected: true, marked: false, selectedColor: 'green' }; // Green for Present
-                presentCount++;
-              } else if (attendanceRecord.absent && attendanceRecord.absent.includes(name)) {
-                formattedData[formattedDate] = { selected: true, marked: false, selectedColor: '#c23a3a' }; // Red for Absent
-                absentCount++;
-              }
+          if (attendanceRecord.isHoliday) {
+            formattedData[formattedDate] = { selected: true, marked: false, selectedColor: '#B38A3C' }; // Yellow for Holiday
+          } else {
+            workingDaysCount++;
+            if (attendanceRecord.present && attendanceRecord.present.includes(name)) {
+              formattedData[formattedDate] = { selected: true, marked: false, selectedColor: 'green' }; // Green for Present
+              presentCount++;
+            } else if (attendanceRecord.absent && attendanceRecord.absent.includes(name)) {
+              formattedData[formattedDate] = { selected: true, marked: false, selectedColor: '#c23a3a' }; // Red for Absent
+              absentCount++;
             }
           }
         }
-
-        setAttendanceData(formattedData);
-        setNoOfPresents(presentCount);
-        setNoOfAbsents(absentCount);
-        setComputedWorkingDays(workingDaysCount);
-        setLoading(false); // Move setLoading(false) here to ensure it's set after data is fetched.
-      } catch (error) {
-        console.error('Error fetching attendance data:', error);
-        setLoading(false); // Also handle loading state in case of error.
       }
-    };
 
-    fetchAttendanceData();
-  }, [className, section, name, presentYear]);
+      setAttendanceData(formattedData);
+      setNoOfPresents(presentCount);
+      setNoOfAbsents(absentCount);
+      setComputedWorkingDays(workingDaysCount);
+      setLoading(false); // Move setLoading(false) here to ensure it's set after data is fetched.
+    } catch (error) {
+      console.error('Error fetching attendance data:', error);
+      setLoading(false); // Also handle loading state in case of error.
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchAttendanceData();
+    }, [className, section, name, presentYear])
+  );
 
   if (loading) {
     return (
@@ -81,8 +84,7 @@ const StudentAttendance = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      {/* <Text style={styles.title}>Student Attendance Details</Text> */}
+    <View style={styles.container} key={`${className}-${section}-${name}`}>
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>Name: <Text style={styles.blueText}>{name}</Text></Text>
         <Text style={styles.infoText}>Gender: <Text style={styles.blueText}>{gender}</Text></Text>

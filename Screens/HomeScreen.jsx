@@ -23,8 +23,6 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Choose your option</Text>
-
-      {/* Render custom buttons */}
       <CustomButton destination="Admin Login" icon="user" label="Admin" />
       <CustomButton destination="Teacher Login" icon="graduation-cap" label="Teacher" />
       <CustomButton destination="Student & Parent Login" icon="child" label="Student & Parent" />

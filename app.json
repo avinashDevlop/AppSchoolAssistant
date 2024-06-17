@@ -1,8 +1,27 @@
 {
   "expo": {
-    "name": "schoolAssistant",
+    "name": "St.johns EM High school",
     "slug": "schoolAssistant",
-    "version": "1.0.0"
-  },
-  "name": "schoolAssistant"
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./Screens/logo.jpg",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./Screens/logo.jpg",
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {
+      "favicon": "./Screens/logo.jpg"
+    }
+  }
 }

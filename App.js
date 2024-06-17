@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import SplashScreen from './Screens/SplashScreen'
 import HomeScreen from "./Screens/HomeScreen";
 import AdminLogin from "./Screens/Admin/AdminLogin";
 import TeacherLogin from "./Screens/Teacher/TeacherLogin";
@@ -44,6 +45,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="School Assistant" component={HomeScreen} />
         <Stack.Screen name="Admin Login" component={AdminLogin} />
         <Stack.Screen name="Teacher Login" component={TeacherLogin} />
