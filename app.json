@@ -24,6 +24,7 @@
     "web": {
       "favicon": "./Screens/logo.jpg"
     },
+    "owner": "avinash_com",
     "extra": {
       "eas": {
         "projectId": "87b15f16-ac06-4154-b00f-51638a0b587c"
