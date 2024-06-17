@@ -1,23 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Card, Icon } from 'react-native-elements';
+import axios from 'axios';
 
-const transportData = [
-  { id: '1', route: 'Route 1', timing: '7:30 AM - 8:00 AM', vehicle: 'Bus 101' },
-  { id: '2', route: 'Route 2', timing: '7:45 AM - 8:15 AM', vehicle: 'Bus 102' },
-  { id: '3', route: 'Route 3', timing: '8:00 AM - 8:30 AM', vehicle: 'Bus 103' },
-];
+const baseURL = 'https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver';
 
-const TransportScreen = () => {
+const TransportScreen = ({ navigation }) => {
+  const [transportData, setTransportData] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${baseURL}.json`);
+      const data = response.data;
+      if (data) {
+        const transportArray = Object.keys(data).map(key => ({
+          id: key,
+          name: data[key].name,
+          vehicle: data[key].Vehicle.vehicleNo,
+        }));
+        setTransportData(transportArray);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <Card>
       <View style={styles.cardHeader}>
         <Icon name="bus" type="font-awesome" size={24} color="#517fa4" />
-        <Text style={styles.cardTitle}>Driver : {item.route}</Text>
+        <Text style={styles.cardTitle}>Driver: {item.name}</Text>
       </View>
-      <Text style={styles.cardText}>Timing: {item.timing}</Text>
       <Text style={styles.cardText}>Vehicle: {item.vehicle}</Text>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('adminTransport', { driverName: item.name })}
+      >
         <Text style={styles.buttonText}>View Details</Text>
       </TouchableOpacity>
     </Card>

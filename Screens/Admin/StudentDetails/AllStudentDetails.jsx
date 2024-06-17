@@ -31,7 +31,7 @@ const AllStudentDetails = () => {
         const response = await axios.get(
           "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents.json"
         );
-        const data = response.data;
+        const data = response.data || {};
 
         if (data) {
           const dataArray = Object.entries(data).map(([value, label]) => ({
@@ -94,6 +94,9 @@ const AllStudentDetails = () => {
           }));
           setSectionItems(sections);
           setSelectedSection(sections[0]?.value || 'A');
+        } else {
+          setSectionItems([]);
+          setSelectedSection(null);
         }
         setLoading(false);
       } catch (error) {
@@ -121,7 +124,7 @@ const AllStudentDetails = () => {
 
         const response = await axios.get(url);
         const data = response.data || {};
-        console.log(data)
+
         // Fetch grade data
         const gradeResponse = await axios.get(
           `https://studentassistant-18fdd-default-rtdb.firebaseio.com/ExamMarks/${selectedClass}/${selectedSection}.json`
@@ -135,7 +138,7 @@ const AllStudentDetails = () => {
         const formattedData = Object.values(data).map((student, index) => {
           const studentFullName = `${student?.surname || ''} ${student?.name || ''}`;
           const studentGrade = marksData[studentFullName]?.grade || "N/A";
-             console.log(studentFullName)
+
           return [
             index + 1,
             studentFullName, 
@@ -206,7 +209,7 @@ const AllStudentDetails = () => {
                     </TouchableOpacity>
                   ))
                 ) : (
-                  <Text>No data available</Text>
+                  <Text style={styles.noDataText}>No data available</Text>
                 )}
               </Table>
             </ScrollView>
@@ -236,11 +239,11 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 20,
     padding: 10,
-    borderWidth: 1
-
-,
+    borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 
+
+8,
   },
   detail: {
     fontSize: 16,
@@ -254,6 +257,7 @@ const styles = StyleSheet.create({
   dataWrapper: { marginTop: -1 },
   row: { height: 40 },
   cellText: { textAlign: 'center', fontWeight: '500', paddingVertical: 10 },
+  noDataText: { textAlign: 'center', marginTop: 20, fontSize: 16, color: '#999' }
 });
 
 export default AllStudentDetails;

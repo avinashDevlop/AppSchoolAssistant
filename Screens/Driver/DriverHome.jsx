@@ -2,10 +2,20 @@ import React, { useEffect, useRef } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import axios from "axios";
 
 const DriverHome = ({ route }) => {
   const navigation = useNavigation();
   const { name } = route.params || {};
+
+  const updateBusStatus = async (status) => {
+    const url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver/${name}/Vehicle.json`;
+    try {
+      await axios.patch(url, { status });
+    } catch (error) {
+      console.error("Failed to update bus status:", error);
+    }
+  };
 
   const handleLogout = () => {
     navigation.navigate("School Assistant");
@@ -14,13 +24,15 @@ const DriverHome = ({ route }) => {
   const handleStartBus = () => {
     const destination = {
       latitude: 14.16104,
-      longitude: 79.37695
+      longitude: 79.37695,
     };
-    navigation.navigate("MapScreen", { destination, stopTracking: false ,name});
+    updateBusStatus("active");
+    navigation.navigate("MapScreen", { destination, stopTracking: false, name });
   };
 
   const handleStopBus = () => {
-    navigation.navigate("MapScreen", { stopTracking: true ,name});
+    updateBusStatus("inactive");
+    navigation.navigate("MapScreen", { stopTracking: true, name });
   };
 
   const features = [

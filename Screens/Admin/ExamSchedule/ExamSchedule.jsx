@@ -8,19 +8,16 @@ import axios from "axios";
 const ExamSchedule = () => {
   const navigation = useNavigation();
 
-  // States for Class DropDownPicker
   const [classOpen, setClassOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("10th Class"); 
   const [classItems, setClassItems] = useState([]);
   const [dataArray, setDataArray] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // States for Section DropDownPicker
   const [sectionOpen, setSectionOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState(); 
   const [sectionItems, setSectionItems] = useState([]);
 
-  // States for Exam Name DropDownPicker
   const [examOpen, setExamOpen] = useState(false);
   const [selectedExam, setSelectedExam] = useState("Term-1");
   const [examItems, setExamItems] = useState([]);
@@ -37,7 +34,7 @@ const ExamSchedule = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents.json"
+          "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms.json"
         );
         const data = response.data;
 
@@ -48,10 +45,6 @@ const ExamSchedule = () => {
         setDataArray(dataArray);
 
         if (data) {
-          const fetchedOptions = Object.keys(data).map((className) => ({
-            value: className,
-            label: className,
-          }));
           const options = [
             { value: "10th Class", label: "10th Class" },
             { value: "9th Class", label: "9th Class" },
@@ -121,7 +114,6 @@ const ExamSchedule = () => {
         if (data) {
           const names = Object.keys(data);
           setTestNames(names);
-          // Select the first test by default if test names are available
           if (names.length > 0) {
             setSelectedExam(names[0]);
           }
@@ -172,7 +164,6 @@ const ExamSchedule = () => {
       if (testDates.length > 0) {
         const examDataArray = [];
 
-        // Loop through each test date
         for (const date of testDates) {
           try {
             const response = await fetch(
@@ -203,7 +194,6 @@ const ExamSchedule = () => {
   return (
     <View style={styles.container}>
       <View style={styles.dropdownRow}>
-        {/* Dropdown for selecting class */}
         <DropDownPicker
           open={classOpen}
           setOpen={setClassOpen}
@@ -217,7 +207,6 @@ const ExamSchedule = () => {
           dropDownStyle={{ backgroundColor: "#fafafa" }}
         />
 
-        {/* Dropdown for selecting section */}
         <DropDownPicker
           open={sectionOpen}
           setOpen={setSectionOpen}
@@ -231,7 +220,6 @@ const ExamSchedule = () => {
           dropDownStyle={{ backgroundColor: "#fafafa" }}
         />
 
-        {/* Dropdown for selecting exam name */}
         <DropDownPicker
           open={examOpen}
           setOpen={setExamOpen}
@@ -246,7 +234,6 @@ const ExamSchedule = () => {
         />
       </View>
 
-      {/* Display selected Class, Section, and Exam name */}
       <View style={styles.selectionContainer}>
         <Text style={styles.selectionText}>Class: {selectedClass}</Text>
         <Text style={styles.selectionText}>Section: {selectedSection}</Text>
@@ -255,8 +242,6 @@ const ExamSchedule = () => {
 
       <ScrollView horizontal={true}>
         <View style={styles.tableContainer}>
-
-
           <Table borderStyle={{ borderColor: "#C10036" }}>
             <Row
               data={tableHead}
@@ -267,6 +252,8 @@ const ExamSchedule = () => {
           </Table>
           <ScrollView style={styles.dataWrapper}>
             <Table>
+
+
               {exams && exams.length > 0 ? (
                 exams.map((exam, rowIndex) => (
                   <Row

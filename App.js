@@ -37,6 +37,7 @@ import StudentChat from './Screens/StudentAndParent/Message/StudentChat'
 import Transport from './Screens/Admin/Transport/Transport'
 import MapScreen from './Screens/Driver/mapScreen'
 import TrackStudBus from "./Screens/StudentAndParent/Transport/TrackStudBus";
+import adminTransport from "./Screens/Admin/Transport/adminTransport"
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -199,6 +200,11 @@ export default function App() {
           name="TrackStudBus"
           component={TrackStudBus}
           options={{title:"Bus Tracking"}}
+        />
+        <Stack.Screen
+          name="adminTransport"
+          component={adminTransport}
+          options={{title:"Driver Bus Tracking"}}
         />
       </Stack.Navigator>
     </NavigationContainer>

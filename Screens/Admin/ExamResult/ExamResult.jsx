@@ -53,7 +53,7 @@ const HomeworkScreen = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents.json"
+          "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms.json"
         );
         const data = response.data;
 
@@ -64,10 +64,6 @@ const HomeworkScreen = () => {
         setDataArray(dataArray);
 
         if (data) {
-          const fetchedOptions = Object.keys(data).map((className) => ({
-            value: className,
-            label: className,
-          }));
           const options = [
             { value: "10th Class", label: "10th Class" },
             { value: "9th Class", label: "9th Class" },

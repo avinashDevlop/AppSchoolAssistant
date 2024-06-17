@@ -9,22 +9,7 @@ const MapScreen = ({ route }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [locationSubscription, setLocationSubscription] = useState(null);
-  const [driverStatus, setDriverStatus] = useState(null);
   const { destination, stopTracking, name } = route.params || {};
-
-  useEffect(() => {
-    const fetchDriverStatus = async () => {
-      try {
-        const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver/${name}/Vehicle/status.json`);
-        setDriverStatus(response.data);
-      } catch (error) {
-        console.error('Error fetching driver status from Firebase:', error);
-        Alert.alert('Error', 'Failed to fetch driver status from Firebase.');
-      }
-    };
-
-    fetchDriverStatus();
-  }, [name]);
 
   useEffect(() => {
     const trackLocation = async () => {
@@ -46,7 +31,7 @@ const MapScreen = ({ route }) => {
           };
           setCurrentLocation(newLocation);
 
-          if (!stopTracking && driverStatus === 'active') {
+          if (!stopTracking) {
             updateLocationInFirebase(latitude, longitude);
           }
 
@@ -63,16 +48,14 @@ const MapScreen = ({ route }) => {
       setLocationSubscription(subscription);
     };
 
-    if (driverStatus !== null) {
-      trackLocation();
-    }
+    trackLocation();
 
     return () => {
       if (locationSubscription) {
         locationSubscription.remove();
       }
     };
-  }, [destination, driverStatus]);
+  }, [destination]);
 
   useEffect(() => {
     if (stopTracking && locationSubscription) {
