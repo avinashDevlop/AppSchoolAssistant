@@ -18,10 +18,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./Screens/logo.jpg",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.avinash_com.schoolAssistant"
     },
     "web": {
       "favicon": "./Screens/logo.jpg"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "87b15f16-ac06-4154-b00f-51638a0b587c"
+      }
     }
   }
 }
