@@ -5,7 +5,7 @@
   "build": {
     "production": {
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
         "buildType": "apk"
       },
       "ios": {
@@ -15,7 +15,7 @@
     },
     "preview": {
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
         "distribution": "internal"
       },
       "ios": {
@@ -25,7 +25,7 @@
     },
     "development": {
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
         "developmentClient": true,
         "distribution": "internal"
       },
@@ -38,8 +38,15 @@
   },
   "submit": {
     "production": {
-      "android": {},
-      "ios": {}
+      "android": {
+        "serviceAccountKeyPath": "./path/to/your/service-account-file.json",
+        "track": "production",
+        "releaseStatus": "completed"
+      },
+      "ios": {
+        "appleId": "your-apple-id",
+        "ascAppId": "your-app-store-connect-app-id"
+      }
     }
   }
 }
