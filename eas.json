@@ -9,9 +9,6 @@
     },
     "preview": {
       "distribution": "internal"
-    },
-    "production": {
-      "image": "./logoApp.png"
     }
   },
   "submit": {
