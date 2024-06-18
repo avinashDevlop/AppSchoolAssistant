@@ -1,39 +1,18 @@
 {
   "cli": {
-    "version": ">= 0.38.0"
+    "version": ">= 3.13.2"
   },
   "build": {
     "development": {
-      "android": {
-        "image": "default",
-        "developmentClient": true,
-        "distribution": "internal"
-      },
-      "ios": {
-        "image": "default",
-        "developmentClient": true,
-        "distribution": "internal"
-      }
+      "developmentClient": true,
+      "distribution": "internal"
     },
     "preview": {
-      "android": {
-        "image": "default",
-        "distribution": "internal"
-      },
-      "ios": {
-        "image": "default",
-        "distribution": "internal"
-      }
+      "distribution": "internal"
     },
-    "production": {
-      "android": {
-        "image": "default",
-        "buildType": "apk"
-      },
-      "ios": {
-        "image": "default",
-        "simulator": true
-      }
-    }
+    "production": {}
+  },
+  "submit": {
+    "production": {}
   }
 }
