@@ -3,49 +3,33 @@
     "version": ">= 0.38.0"
   },
   "build": {
-    "production": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
-        "buildType": "apk"
+        "image": "default"
       },
       "ios": {
-        "image": "latest",
-        "simulator": true
+        "image": "default"
       }
     },
     "preview": {
+      "distribution": "internal",
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
-        "distribution": "internal"
+        "image": "default"
       },
       "ios": {
-        "image": "latest",
-        "distribution": "internal"
+        "image": "default"
       }
     },
-    "development": {
-      "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r25b",
-        "developmentClient": true,
-        "distribution": "internal"
-      },
-      "ios": {
-        "image": "latest",
-        "developmentClient": true,
-        "distribution": "internal"
-      }
-    }
-  },
-  "submit": {
     "production": {
       "android": {
-        "serviceAccountKeyPath": "./path/to/your/service-account-file.json",
-        "track": "production",
-        "releaseStatus": "completed"
+        "buildType": "apk",
+        "image": "default"
       },
       "ios": {
-        "appleId": "your-apple-id",
-        "ascAppId": "your-app-store-connect-app-id"
+        "simulator": true,
+        "image": "default"
       }
     }
   }
