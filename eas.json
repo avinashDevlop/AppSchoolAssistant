@@ -9,9 +9,14 @@
     },
     "preview": {
       "distribution": "internal"
+    },
+    "production": {
+      "distribution": "store",
+      "releaseChannel": "production"
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+    }
   }
 }
