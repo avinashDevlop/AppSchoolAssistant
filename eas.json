@@ -4,32 +4,35 @@
   },
   "build": {
     "development": {
-      "developmentClient": true,
-      "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "default",
+        "developmentClient": true,
+        "distribution": "internal"
       },
       "ios": {
-        "image": "default"
+        "image": "default",
+        "developmentClient": true,
+        "distribution": "internal"
       }
     },
     "preview": {
-      "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "default",
+        "distribution": "internal"
       },
       "ios": {
-        "image": "default"
+        "image": "default",
+        "distribution": "internal"
       }
     },
     "production": {
       "android": {
-        "buildType": "apk",
-        "image": "default"
+        "image": "default",
+        "buildType": "apk"
       },
       "ios": {
-        "simulator": true,
-        "image": "default"
+        "image": "default",
+        "simulator": true
       }
     }
   }
