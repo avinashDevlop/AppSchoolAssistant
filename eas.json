@@ -3,19 +3,17 @@
     "version": ">= 3.13.2"
   },
   "build": {
+    "image": "default",
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "image": "default"
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "image": "default"
+      "distribution": "internal"
     },
     "production": {
       "distribution": "store",
-      "releaseChannel": "production",
-      "image": "default"
+      "releaseChannel": "production"
     }
   },
   "submit": {
