@@ -11,9 +11,7 @@
       "distribution": "internal"
     },
     "production": {
-      "release": {
-        "image": "./logoApp.png"
-      }
+      "image": "./logoApp.png"
     }
   },
   "submit": {

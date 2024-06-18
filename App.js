@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import SplashScreen from './Screens/SplashScreen'
@@ -39,9 +39,25 @@ import Transport from './Screens/Admin/Transport/Transport'
 import MapScreen from './Screens/Driver/mapScreen'
 import TrackStudBus from "./Screens/StudentAndParent/Transport/TrackStudBus";
 import adminTransport from "./Screens/Admin/Transport/adminTransport"
+import * as Updates from 'expo-updates';
 const Stack = createStackNavigator();
 
 export default function App() {
+  async function onFetchUpdateAsync(){
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+        }
+        } catch (error) {
+          alert(error);
+      }
+  }
+  useEffect(()=>{
+    onFetchUpdateAsync();
+  },[]
+)
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">

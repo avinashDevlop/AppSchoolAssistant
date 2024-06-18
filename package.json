@@ -45,7 +45,8 @@
     "react-native-table-component": "^1.2.2",
     "react-native-timetable": "^1.0.6",
     "react-native-uuid": "^2.0.2",
-    "react-native-vector-icons": "^10.1.0"
+    "react-native-vector-icons": "^10.1.0",
+    "expo-updates": "~0.25.17"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
