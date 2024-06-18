@@ -7,7 +7,10 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "default",
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+        }
       },
       "ios": {
         "image": "default"
@@ -16,7 +19,10 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "default",
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+        }
       },
       "ios": {
         "image": "default"
@@ -25,7 +31,10 @@
     "production": {
       "android": {
         "buildType": "apk",
-        "image": "default"
+        "image": "default",
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+        }
       },
       "ios": {
         "simulator": true,
