@@ -3,42 +3,36 @@
     "version": ">= 0.38.0"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
+    "production": {
       "android": {
-        "image": "default",
-        "env": {
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-        }
+        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "buildType": "apk"
       },
       "ios": {
-        "image": "default"
+        "image": "latest",
+        "simulator": true
       }
     },
     "preview": {
-      "distribution": "internal",
       "android": {
-        "image": "default",
-        "env": {
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-        }
+        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "distribution": "internal"
       },
       "ios": {
-        "image": "default"
+        "image": "latest",
+        "distribution": "internal"
       }
     },
-    "production": {
+    "development": {
       "android": {
-        "buildType": "apk",
-        "image": "default",
-        "env": {
-          "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-        }
+        "image": "ubuntu-22.04-jdk-17-ndk-r23c",
+        "developmentClient": true,
+        "distribution": "internal"
       },
       "ios": {
-        "simulator": true,
-        "image": "default"
+        "image": "latest",
+        "developmentClient": true,
+        "distribution": "internal"
       }
     }
   }
