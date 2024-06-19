@@ -10,7 +10,8 @@
         "image": "latest"
       },
       "android": {
-        "image": "latest"
+        "image": "latest",
+        "buildType": "apk"
       },
       "channel": "default",
       "cache": {
@@ -44,7 +45,10 @@
       "distribution": "internal"
     },
     "production": {
-      "extends": "base"
+      "extends": "base",
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
