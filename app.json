@@ -5,6 +5,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./logoApp.png",
+    "splash": {
+      "image": "./logoApp.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -24,21 +29,10 @@
     "web": {
       "favicon": "./logoApp.png"
     },
-    "owner": "avinash_com",
     "extra": {
       "eas": {
         "projectId": "87b15f16-ac06-4154-b00f-51638a0b587c"
       }
-    },
-    "splash": {
-      "image": "./logoApp.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "plugins":{
-       "expo-updates":{
-        "username":"avinash_com"
-       }
     }
   }
 }

@@ -45,10 +45,7 @@
       "distribution": "internal"
     },
     "production": {
-      "extends": "base",
-      "android": {
-        "buildType": "apk"
-      }
+      "extends": "base"
     }
   },
   "submit": {
