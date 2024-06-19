@@ -4,13 +4,12 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import AttendenceTable from "../Tables/AttendenceTable";
 
 const AttendancePage = () => {
-
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
         <View style={styles.itemContainer}>
           <FontAwesomeIcon name="child" size={42} color="#0c46c4" />
-          <View style={styles.textContainer}>
+          <View style={styles.textContainer}> 
             <Text style={styles.titleText}>Student</Text>
             <Text style={styles.subText}>
               <Text style={styles.greenText}>200</Text>
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
   },
   attendanceText: {
     color: "#000",
-    fontSize: 16,
+    fontSize: 16, 
   },
 });
 

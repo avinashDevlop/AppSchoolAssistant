@@ -4,7 +4,7 @@ import { Table, Row } from 'react-native-table-component';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
-const ExampleThree = () => {
+const AttendenceTable = () => {
   const navigation = useNavigation();
   const [tableData, setTableData] = useState([]);
   const tableHead = ['Class', 'Section', 'Total', 'Present', 'Absent'];
@@ -104,4 +104,4 @@ const styles = StyleSheet.create({
   loadingText: { textAlign: 'center', marginTop: 20 },
 });
 
-export default ExampleThree;
+export default AttendenceTable;
