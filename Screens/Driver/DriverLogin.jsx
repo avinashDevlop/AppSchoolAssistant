@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'; 
 
 const DriverLogin = ({ navigation }) => {
-  const [username, setUsername] = useState('avinashramba8@gmail.com');
-  const [password, setPassword] = useState('12345678');
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {

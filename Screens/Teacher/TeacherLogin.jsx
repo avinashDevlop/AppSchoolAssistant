@@ -20,7 +20,7 @@ const TeacherLogin = ({ navigation }) => {
         // Check if there's a teacher with the entered username
         const teacher = Object.values(teachers).find(teacher => teacher.userName === trimmedUsername);
         //teacher && teacher.password === trimmedPassword
-        if (username==''&password=='') {
+        if (teacher && teacher.password === trimmedPassword) {
           // Navigate to teacher home on successful login
           navigation.navigate('Teacher Home',teacher);
         } else {

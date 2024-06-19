@@ -16,13 +16,13 @@ const AdminLogin = () => {
       // Check if either username or password is empty
       Alert.alert('Missing Information', 'Please enter both username and password');
       return; // Exit the function early
-    }
+    } 
 
     try {
-      // await signInWithEmailAndPassword(auth, username, password); //imp
+      await signInWithEmailAndPassword(auth, username, password); 
       navigation.navigate('Admin Home');
     } catch (error) {
-      Alert.alert('Invalid Credentials', error.message);
+      Alert.alert('Invalid Credentials','Incorrect username or password');
     }
   };
 

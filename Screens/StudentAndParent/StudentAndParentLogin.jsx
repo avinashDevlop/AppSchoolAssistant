@@ -5,11 +5,11 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 
 const StudentAndParentLogin = ({ navigation }) => {
-  const [username, setUsername] = useState('avinashramba8@gmail.com');
-  const [password, setPassword] = useState('1');
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const [classOptions, setClassOptions] = useState([]);
-  const [selectedClass, setSelectedClass] = useState('10th Class');
+  const [selectedClass, setSelectedClass] = useState();
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
   const [loading, setLoading] = useState(false);
