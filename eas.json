@@ -1,9 +1,8 @@
 {
   "cli": {
-    "version": ">= 3.13.2"
+    "version": ">= 0.52.0"
   },
   "build": {
-    "image": "default",
     "development": {
       "developmentClient": true,
       "distribution": "internal"
@@ -12,8 +11,9 @@
       "distribution": "internal"
     },
     "production": {
-      "distribution": "store",
-      "releaseChannel": "production"
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
