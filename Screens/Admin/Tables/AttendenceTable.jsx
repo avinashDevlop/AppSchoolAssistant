@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity } from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import api from '../../../api'
 
 const AttendenceTable = () => {
   const navigation = useNavigation();
@@ -22,11 +22,11 @@ const AttendenceTable = () => {
       try {
         const requests = classes.flatMap(className =>
           sections.map(async section => {
-            const presentResponse = await axios.get(
-              `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${className}/Section ${section}/${month}/${month}_${day}/present.json`
+            const presentResponse = await api.get(
+              `Attendance/StudAttendance/${className}/Section ${section}/${month}/${month}_${day}/present.json`
             );
-            const absentResponse = await axios.get(
-              `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${className}/Section ${section}/${month}/${month}_${day}/absent.json`
+            const absentResponse = await api.get(
+              `Attendance/StudAttendance/${className}/Section ${section}/${month}/${month}_${day}/absent.json`
             );
 
             const presentData = presentResponse.data ? Object.values(presentResponse.data) : [];

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from 'expo-location';
-import axios from 'axios';
+import api from "../../api"
 
 const MapScreen = ({ route }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -15,7 +15,7 @@ const MapScreen = ({ route }) => {
   useEffect(() => {
     const fetchDriverStatus = async () => {
       try {
-        const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver/${name}/Vehicle/status.json`);
+        const response = await api.get(`accounts/Driver/${name}/Vehicle/status.json`);
         setDriverStatus(response.data);
       } catch (error) {
         console.error('Error fetching driver status from Firebase:', error);
@@ -95,7 +95,7 @@ const MapScreen = ({ route }) => {
 
   const updateLocationInFirebase = async (latitude, longitude) => {
     try {
-      await axios.put(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver/${name}/Vehicle/Location.json`, {
+      await api.put(`accounts/Driver/${name}/Vehicle/Location.json`, {
         latitude,
         longitude,
       });
@@ -120,7 +120,7 @@ const MapScreen = ({ route }) => {
             }}
             title="Bus Location"
           >
-            <FontAwesome5 name="bus" size={30} color="red" />
+            <FontAwesome5 name="bus" size={30} color="#f0a029" />
           </Marker>
         )}
         {destination && (

@@ -1,111 +1,59 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ScrollView } from 'react-native';
+
+// Importing all images
+import img1 from './blog/2018paplet.jpg';
+import img2 from './blog/1000100104.jpg';
+import img3 from './blog/1000100105.jpg';
+import img4 from './blog/1000100107.jpg';
+import img5 from './blog/1000100108.jpg';
+import img6 from './blog/1000100109.jpg';
+import img7 from './blog/1000100110.jpg';
+import img8 from './blog/1000100112.jpg';
+import img9 from './blog/1000100113.jpg';
+import img10 from './blog/1000100114.jpg';
+import img11 from './blog/1000100115.jpg';
+import img12 from './blog/1000100117.jpg';
+import img13 from './blog/awardTaking.jpg';
+import img14 from './blog/planting.jpg';
+import img15 from './blog/schoolbig.jpg';
+
+const images = [
+  img1, img2, img3, img4, img5, img6, img7, img8, img9, img10,
+  img11, img12, img13, img14, img15
+];
 
 const Gallery = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <Image
-          source={{uri: 'https://via.placeholder.com/150'}}
-          style={styles.image}
-          resizeMode="cover"
-        />
-        {/* Add more images as needed */}
+        {images.map((img, index) => (
+          <Image
+            key={index}
+            source={img}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    padding: 10,
   },
   imageContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
-  // riya kodali  
   image: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 210,
     margin: 5,
   },
 });

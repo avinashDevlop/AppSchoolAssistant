@@ -96,7 +96,7 @@ const TrackStudBus = ({ route }) => {
               }}
               title="Bus Location"
             >
-              <FontAwesome5 name="bus" size={30} color="red" />
+              <FontAwesome5 name="bus" size={30} color="#f0a029" />
             </Marker>
             <Polyline
               coordinates={[

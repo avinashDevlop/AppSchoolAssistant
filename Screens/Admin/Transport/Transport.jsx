@@ -32,7 +32,7 @@ const TransportScreen = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <Card>
       <View style={styles.cardHeader}>
-        <Icon name="bus" type="font-awesome" size={24} color="#517fa4" />
+        <Icon name="bus" type="font-awesome" size={24} color="#f0a029" />
         <Text style={styles.cardTitle}>Driver: {item.name}</Text>
       </View>
       <Text style={styles.cardText}>Vehicle: {item.vehicle}</Text>
