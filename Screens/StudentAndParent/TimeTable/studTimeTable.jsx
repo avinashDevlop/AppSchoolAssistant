@@ -5,16 +5,15 @@ import axios from "axios";
 
 // Wrapper to handle default props
 const TimeTableViewWrapper = ({
-  events = [],
-  pivotTime = 1,
-  pivotEndTime = 10,
-  pivotDate = genTimeBlock("mon"),
-  nDays = 6,
-  onEventPress = () => {},
-  headerStyle = styles.headerStyle,
-  formatDateHeader = "dddd",
-  locale = "en-US",
-  ...props
+  events,
+  pivotTime,
+  pivotEndTime,
+  pivotDate,
+  nDays,
+  onEventPress,
+  headerStyle,
+  formatDateHeader,
+  locale,
 }) => (
   <TimeTableView
     events={events}
@@ -26,14 +25,13 @@ const TimeTableViewWrapper = ({
     headerStyle={headerStyle}
     formatDateHeader={formatDateHeader}
     locale={locale}
-    {...props}
   />
 );
 
-const App = ({route}) => {
-    const { className, section } = route.params;
-  const [selectedClass, setSelectedClass] = useState(className);
-  const [selectedSection, setSelectedSection] = useState(section);
+const App = ({ route }) => {
+  const { className, section } = route.params;
+  const [selectedClass] = useState(className);
+  const [selectedSection] = useState(section);
   const [timetableData, setTimetableData] = useState({});
 
   useEffect(() => {
@@ -112,6 +110,13 @@ const App = ({route}) => {
         <TimeTableViewWrapper
           events={renderTimetable()}
           onEventPress={onEventPress}
+          pivotTime={1}
+          pivotEndTime={10}
+          pivotDate={genTimeBlock("mon")}
+          nDays={6}
+          headerStyle={styles.headerStyle}
+          formatDateHeader="dddd"
+          locale="en-US"
         />
       </View>
     </SafeAreaView>
