@@ -1,9 +1,31 @@
 {
   "cli": {
-    "version": ">= 0.60.0"
+    "version": ">= 2.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
+    "base": {
+      "ios": {
+        "resourceClass": "large",
+        "image": "latest"
+      },
+      "android": {
+        "image": "latest"
+      },
+      "channel": "default",
+      "cache": {
+        "key": "welp"
+      },
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_AD_MOB_UNIT_ID_IOS": "ca-app-pub-2312569320461549/2517428180",
+        "EXPO_PUBLIC_AD_MOB_UNIT_ID_ANDROID": "ca-app-pub-2312569320461549/9830096940",
+        "NODE_ENV": "production",
+        "EXPO_USE_FAST_RESOLVER": "1"
+      }
+    },
     "development": {
+      "extends": "base",
       "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
@@ -11,47 +33,25 @@
       "ios": {
         "buildConfiguration": "Debug"
       },
-      "channel": "development"
+      "env": {
+        "EXPO_PUBLIC_AD_MOB_UNIT_ID_IOS": "ca-app-pub-3940256099942544/1712485313",
+        "EXPO_PUBLIC_AD_MOB_UNIT_ID_ANDROID": "ca-app-pub-3940256099942544/5224354917",
+        "NODE_ENV": "development"
+      }
     },
     "preview": {
-      "distribution": "internal",
-      "channel": "preview"
+      "extends": "base",
+      "distribution": "internal"
     },
     "production": {
-      "channel": "production"
-    },
-    "test": {
-      "android": {
-        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
-        "withoutCredentials": true
-      },
-      "ios": {
-        "simulator": true
-      },
-      "buildArtifactPaths": [
-        "artifacts/**/*.png"
-      ],
-      "channel": "test"
-    },
-    "test_debug": {
-      "android": {
-        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
-        "withoutCredentials": true
-      },
-      "ios": {
-        "buildConfiguration": "Debug",
-        "simulator": true
-      },
-      "env": {
-        "EXPO_USE_UPDATES": "1"
-      },
-      "buildArtifactPaths": [
-        "artifacts/**/*.png"
-      ],
-      "channel": "test_debug"
+      "extends": "base"
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "1336398804"
+      }
+    }
   }
 }
