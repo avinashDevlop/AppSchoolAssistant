@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { StatusBar } from "react-native";
 import SplashScreen from './Screens/SplashScreen';
 import HomeScreen from "./Screens/HomeScreen";
 import AdminLogin from "./Screens/Admin/AdminLogin";
@@ -39,17 +40,39 @@ import Transport from './Screens/Admin/Transport/Transport';
 import MapScreen from './Screens/Driver/mapScreen';
 import TrackStudBus from "./Screens/StudentAndParent/Transport/TrackStudBus";
 import adminTransport from "./Screens/Admin/Transport/adminTransport";
+import * as Updates from 'expo-updates';
 
 const Stack = createStackNavigator();
 
 export default function App() {
-
+  useEffect(() => {
+    async function checkForUpdates() {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  
+    checkForUpdates();
+  }, []);
+  
   return (
+    <>
+     <StatusBar
+        barStyle="light-content"
+        backgroundColor="#455756"
+      />
+    
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name="School Assistant" component={HomeScreen} />
-        <Stack.Screen name="Admin Login" component={AdminLogin} />  
+        <Stack.Screen name="Admin Login" component={AdminLogin} />
         <Stack.Screen name="Teacher Login" component={TeacherLogin} />
         <Stack.Screen
           name="Student & Parent Login"
@@ -212,5 +235,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </>
   );
 }
