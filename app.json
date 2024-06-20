@@ -19,7 +19,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier":"no"
+      "bundleIdentifier": "no"
     },
     "android": {
       "adaptiveIcon": {
@@ -43,6 +43,7 @@
       "eas": {
         "projectId": "87b15f16-ac06-4154-b00f-51638a0b587c"
       }
-    }
+    },
+    "owner": "avinash_com"
   }
 }
