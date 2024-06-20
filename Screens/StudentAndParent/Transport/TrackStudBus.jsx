@@ -9,12 +9,16 @@ const TrackStudBus = ({ route }) => {
   const { className, sectionName, studentName } = route.params || {};
   const [driverLocation, setDriverLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [initialRegion, setInitialRegion] = useState(null); // Added initialRegion state
+
   const destination = {
     latitude: 14.16104,
     longitude: 79.37695
   };
 
   useEffect(() => {
+    let userSubscription;
+
     const fetchDriverLocation = async () => {
       try {
         const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver.json`);
@@ -37,12 +41,14 @@ const TrackStudBus = ({ route }) => {
 
           if (locationData) {
             const { latitude, longitude } = locationData;
-            setDriverLocation({
+            const driverRegion = {
               latitude,
               longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            });
+            };
+            setDriverLocation(driverRegion);
+            setInitialRegion(driverRegion); // Set initial region when driver location is first fetched
           } else {
             Alert.alert('Error', 'Driver location not found.');
           }
@@ -62,7 +68,7 @@ const TrackStudBus = ({ route }) => {
         return;
       }
 
-      const userSubscription = await Location.watchPositionAsync(
+      userSubscription = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, distanceInterval: 10 },
         (location) => {
           const { latitude, longitude } = location.coords;
@@ -72,43 +78,57 @@ const TrackStudBus = ({ route }) => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           });
+          if (!initialRegion) {
+            setInitialRegion({
+              latitude,
+              longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            });
+          }
         }
       );
-
-      return () => {
-        userSubscription.remove();
-      };
     };
 
     fetchDriverLocation();
     trackUserLocation();
+
+    return () => {
+      if (userSubscription) {
+        userSubscription.remove();
+      }
+    };
   }, [className, sectionName, studentName]);
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={driverLocation || userLocation} showsUserLocation={false}>
-        {driverLocation && (
-          <>
-            <Marker
-              coordinate={{
-                latitude: driverLocation.latitude,
-                longitude: driverLocation.longitude,
-              }}
-              title="Bus Location"
-            >
-              <FontAwesome5 name="bus" size={30} color="#f0a029" />
-            </Marker>
-            <Polyline
-              coordinates={[
-                { latitude: driverLocation.latitude, longitude: driverLocation.longitude },
-                { latitude: destination.latitude, longitude: destination.longitude }
-              ]}
-              strokeColor="blue"
-              strokeWidth={3}
-            />
-          </>
-        )}
-        {destination && (
+      {initialRegion && (
+        <MapView
+          style={styles.map}
+          initialRegion={initialRegion}
+          showsUserLocation={false}
+        >
+          {driverLocation && (
+            <>
+              <Marker
+                coordinate={{
+                  latitude: driverLocation.latitude,
+                  longitude: driverLocation.longitude,
+                }}
+                title="Bus Location"
+              >
+                <FontAwesome5 name="bus" size={30} color="#f0a029" />
+              </Marker>
+              <Polyline
+                coordinates={[
+                  { latitude: driverLocation.latitude, longitude: driverLocation.longitude },
+                  { latitude: destination.latitude, longitude: destination.longitude }
+                ]}
+                strokeColor="blue"
+                strokeWidth={3}
+              />
+            </>
+          )}
           <Marker
             coordinate={{
               latitude: destination.latitude,
@@ -118,19 +138,19 @@ const TrackStudBus = ({ route }) => {
           >
             <FontAwesome5 name="school" size={30} color="blue" />
           </Marker>
-        )}
-        {userLocation && (
-          <Marker
-            coordinate={{
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude,
-            }}
-            title="Your Location"
-          >
-            <FontAwesome5 name="user" size={30} color="green" />
-          </Marker>
-        )}
-      </MapView>
+          {userLocation && (
+            <Marker
+              coordinate={{
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+              }}
+              title="Your Location"
+            >
+              <FontAwesome5 name="user" size={30} color="green" />
+            </Marker>
+          )}
+        </MapView>
+      )}
     </View>
   );
 };

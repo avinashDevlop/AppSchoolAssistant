@@ -107,12 +107,12 @@ const MapScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        region={currentLocation}
-        showsUserLocation={false} // Set to false as we are using a custom marker
-      >
-        {currentLocation && (
+      {currentLocation && (
+        <MapView
+          style={styles.map}
+          initialRegion={currentLocation}
+          showsUserLocation={false} // Set to false as we are using a custom marker
+        >
           <Marker
             coordinate={{
               latitude: currentLocation.latitude,
@@ -122,26 +122,26 @@ const MapScreen = ({ route }) => {
           >
             <FontAwesome5 name="bus" size={30} color="#f0a029" />
           </Marker>
-        )}
-        {destination && (
-          <Marker
-            coordinate={{
-              latitude: destination.latitude,
-              longitude: destination.longitude,
-            }}
-            title="School"
-          >
-            <FontAwesome5 name="school" size={30} color="blue" />
-          </Marker>
-        )}
-        {routeCoordinates.length > 0 && (
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeWidth={4}
-            strokeColor="blue"
-          />
-        )}
-      </MapView>
+          {destination && (
+            <Marker
+              coordinate={{
+                latitude: destination.latitude,
+                longitude: destination.longitude,
+              }}
+              title="School"
+            >
+              <FontAwesome5 name="school" size={30} color="blue" />
+            </Marker>
+          )}
+          {routeCoordinates.length > 0 && (
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeWidth={4}
+              strokeColor="blue"
+            />
+          )}
+        </MapView>
+      )}
     </View>
   );
 };

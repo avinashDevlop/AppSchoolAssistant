@@ -7,6 +7,8 @@ import { FontAwesome5 } from 'react-native-vector-icons';
 const AdminTransport = ({ route, navigation }) => {
   const { driverName } = route.params || {};
   const [driverLocation, setDriverLocation] = useState(null);
+  const [initialRegion, setInitialRegion] = useState(null);
+
   const destination = {
     latitude: 14.16104,
     longitude: 79.37695
@@ -23,12 +25,14 @@ const AdminTransport = ({ route, navigation }) => {
 
           if (locationData) {
             const { latitude, longitude } = locationData;
-            setDriverLocation({
+            const driverRegion = {
               latitude,
               longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            });
+            };
+            setDriverLocation({ latitude, longitude });
+            setInitialRegion(driverRegion); // Set initial region when driver location is first fetched
           } else {
             Alert.alert('Error', 'Driver location not found.');
             navigation.navigate('Transport');
@@ -52,38 +56,44 @@ const AdminTransport = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} region={driverLocation} showsUserLocation={false}>
-        {driverLocation && (
-          <>
-            <Marker
-              coordinate={{
-                latitude: driverLocation.latitude,
-                longitude: driverLocation.longitude,
-              }}
-              title="Bus Location"
-            >
-              <FontAwesome5 name="bus" size={30} color="red" />
-            </Marker>
-            <Polyline
-              coordinates={[
-                { latitude: driverLocation.latitude, longitude: driverLocation.longitude },
-                { latitude: destination.latitude, longitude: destination.longitude }
-              ]}
-              strokeColor="blue"
-              strokeWidth={3}
-            />
-          </>
-        )}
-        <Marker
-          coordinate={{
-            latitude: destination.latitude,
-            longitude: destination.longitude,
-          }}
-          title="Destination"
+      {initialRegion && (
+        <MapView
+          style={styles.map}
+          initialRegion={initialRegion}
+          showsUserLocation={false}
         >
-          <FontAwesome5 name="school" size={30} color="blue" />
-        </Marker>
-      </MapView>
+          {driverLocation && (
+            <>
+              <Marker
+                coordinate={{
+                  latitude: driverLocation.latitude,
+                  longitude: driverLocation.longitude,
+                }}
+                title="Bus Location"
+              >
+                <FontAwesome5 name="bus" size={30} color="red" />
+              </Marker>
+              <Polyline
+                coordinates={[
+                  { latitude: driverLocation.latitude, longitude: driverLocation.longitude },
+                  { latitude: destination.latitude, longitude: destination.longitude }
+                ]}
+                strokeColor="blue"
+                strokeWidth={3}
+              />
+            </>
+          )}
+          <Marker
+            coordinate={{
+              latitude: destination.latitude,
+              longitude: destination.longitude,
+            }}
+            title="Destination"
+          >
+            <FontAwesome5 name="school" size={30} color="blue" />
+          </Marker>
+        </MapView>
+      )}
     </View>
   );
 };

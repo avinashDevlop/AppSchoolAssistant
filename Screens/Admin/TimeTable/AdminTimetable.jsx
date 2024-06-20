@@ -1,32 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
-import TimeTableView, { genTimeBlock } from 'react-native-timetable';
+import TimeTableViewWrapper from './TimeTableViewWrapper'; 
 import DropDownPicker from 'react-native-dropdown-picker';
-import axios from 'axios';
-
-const TimeTableViewWrapper = ({
-  events = [],
-  pivotTime = 1,
-  pivotEndTime = 10,
-  pivotDate = genTimeBlock('mon'),
-  nDays = 6,
-  onEventPress = () => {},
-  headerStyle = styles.headerStyle,
-  formatDateHeader = 'dddd',
-  locale = 'en-US',
-}) => (
-  <TimeTableView
-    events={events}
-    pivotTime={pivotTime}
-    pivotEndTime={pivotEndTime}
-    pivotDate={pivotDate}
-    nDays={nDays}
-    onEventPress={onEventPress}
-    headerStyle={headerStyle}
-    formatDateHeader={formatDateHeader}
-    locale={locale}
-  />
-);
+import { genTimeBlock } from 'react-native-timetable';
+import api from '../../../api';
 
 const TimeTable = () => {
   const [classOpen, setClassOpen] = useState(false);
@@ -64,8 +41,8 @@ const TimeTable = () => {
   useEffect(() => {
     const fetchSectionOptions = async () => {
       try {
-        const url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}.json`;
-        const response = await axios.get(url);
+        const url = `admissionForms/${selectedClass}.json`;
+        const response = await api.get(url);
         const data = response.data;
 
         if (data) {
@@ -91,8 +68,8 @@ const TimeTable = () => {
         const data = {};
 
         for (const day of days) {
-          const url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/SchoolTimeTable/${selectedClass}/${selectedSection}/${day}.json`;
-          const response = await axios.get(url);
+          const url = `SchoolTimeTable/${selectedClass}/${selectedSection}/${day}.json`;
+          const response = await api.get(url);
           if (response.data !== null) {
             data[day] = response.data;
           }
@@ -140,8 +117,8 @@ const TimeTable = () => {
         if (subject) {
           const startPosition = periods[period].startTime;
           const endPosition = periods[period].endTime;
-          const startTime = timetableData['Monday'][period].startTime; // Fixed day reference here
-          const endTime = timetableData['Monday'][period].endTime; // Fixed day reference here
+          const startTime = timetableData['Monday'][period].startTime;
+          const endTime = timetableData['Monday'][period].endTime;
           timetable.push({
             title: subject,
             day: day,
