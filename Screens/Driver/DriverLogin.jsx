@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios'; 
+import axios from 'axios';
 
 const DriverLogin = ({ navigation }) => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
+    if (!username || !password) {
+      Alert.alert('Missing fields', 'Please enter both username and password');
+      return;
+    }
+
+    setLoading(true);
+
     // Fetch driver data from Firebase using Axios
     axios.get('https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver.json')
       .then(response => {
         const drivers = response.data;
+        if (!drivers) {
+          throw new Error('No drivers found');
+        }
+
         // Trim inputs to remove leading/trailing spaces
         const trimmedUsername = username.trim();
         const trimmedPassword = password.trim();
+
         // Check if there's a driver with the entered username
         const driver = Object.values(drivers).find(driver => driver.userName === trimmedUsername);
 
         if (driver && driver.password === trimmedPassword) {
           // Navigate to driver home on successful login
-          navigation.navigate('Driver Home',driver);
+          navigation.navigate('Driver Home', driver);
         } else {
           Alert.alert('Invalid credentials', 'Please enter correct username and password');
         }
@@ -29,9 +42,12 @@ const DriverLogin = ({ navigation }) => {
       .catch(error => {
         console.error('Error fetching driver data:', error);
         Alert.alert('Error', 'An error occurred while trying to login. Please try again later.');
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
-  
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -72,10 +88,9 @@ const DriverLogin = ({ navigation }) => {
       </View>
 
       {/* Login button */}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonTitle}>Login</Text>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonTitle}>Login</Text>}
       </TouchableOpacity>
-
     </View>
   );
 };
@@ -133,14 +148,18 @@ const styles = StyleSheet.create({
   passwordIcon: {
     paddingHorizontal: 10,
   },
-  loginButtonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+  loginButton: {
     backgroundColor: '#007bff',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loginButtonTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 });
 

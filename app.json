@@ -26,7 +26,8 @@
         "foregroundImage": "./logoApp.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.avinash_com.schoolAssistant",
+      "package": "com.StjohnsEM.Highschool",
+      "versionCode": 1,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

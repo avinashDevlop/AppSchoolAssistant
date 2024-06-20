@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from 'expo-location';
-import api from "../../api"
+import api from "../../api";
 
 const MapScreen = ({ route }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -15,7 +15,9 @@ const MapScreen = ({ route }) => {
   useEffect(() => {
     const fetchDriverStatus = async () => {
       try {
+        console.log('Fetching driver status...');
         const response = await api.get(`accounts/Driver/${name}/Vehicle/status.json`);
+        console.log('Driver status fetched:', response.data);
         setDriverStatus(response.data);
       } catch (error) {
         console.error('Error fetching driver status from Firebase:', error);
@@ -111,7 +113,7 @@ const MapScreen = ({ route }) => {
         <MapView
           style={styles.map}
           initialRegion={currentLocation}
-          showsUserLocation={false} // Set to false as we are using a custom marker
+          showsUserLocation={false} 
         >
           <Marker
             coordinate={{
