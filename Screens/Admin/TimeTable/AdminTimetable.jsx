@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
-import TimeTableViewWrapper from './TimeTableViewWrapper'; 
 import DropDownPicker from 'react-native-dropdown-picker';
+import TimeTableViewWrapper from './TimeTableViewWrapper';
 import { genTimeBlock } from 'react-native-timetable';
 import api from '../../../api';
 
@@ -13,7 +13,7 @@ const TimeTable = () => {
   const [selectedSection, setSelectedSection] = useState('Section A');
   const [sectionItems, setSectionItems] = useState([]);
   const [timetableData, setTimetableData] = useState({});
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchClassOptions = async () => {
@@ -76,10 +76,10 @@ const TimeTable = () => {
         }
 
         setTimetableData(data);
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching timetable data:', error);
-        setLoading(false); // Ensure loading state is handled even in case of errors
+        setLoading(false);
       }
     };
 
