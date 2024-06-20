@@ -47,194 +47,72 @@ const Stack = createStackNavigator();
 export default function App() {
   useEffect(() => {
     async function checkForUpdates() {
-      try {
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
+      if (!__DEV__) {
+        try {
+          const update = await Updates.checkForUpdateAsync();
+          if (update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            await Updates.reloadAsync();
+          }
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
       }
     }
-  
+
     checkForUpdates();
   }, []);
-  
+
   return (
     <>
-     <StatusBar
+      <StatusBar
         barStyle="light-content"
         backgroundColor="#455756"
       />
-    
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="School Assistant" component={HomeScreen} />
-        <Stack.Screen name="Admin Login" component={AdminLogin} />
-        <Stack.Screen name="Teacher Login" component={TeacherLogin} />
-        <Stack.Screen
-          name="Student & Parent Login"
-          component={StudentAndParentLogin}
-        />
-        <Stack.Screen name="Driver Login" component={DriverLogin} />
-        <Stack.Screen
-          name="Admin Home"
-          component={AdminHome}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Teacher Home"
-          component={TeacherHome}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Student & Parent Home"
-          component={StudentAndParentHome}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Driver Home"
-          component={DriverHome}
-          options={{ headerShown: false }}
-        />
-        {/* admin property */}
-        <Stack.Screen
-          name="Attendence"
-          component={AdminAttendence}
-        />
-        <Stack.Screen
-          name="Class Wise Attendance"
-          component={ClassWiseAttendence}
-        />
-        <Stack.Screen
-          name="StudentAttendance"
-          component={StudentAttendance}
-          options={{ title: "Student Attendance" }}
-        />
-        <Stack.Screen
-          name="Home Work"
-          component={AdminHomeWork}
-        />
-        <Stack.Screen
-          name="AdminExamSchedule"
-          component={ExamSchedule}
-          options={{ title: "Exam Schedule" }}
-        />
-        <Stack.Screen
-          name="Exam Result"
-          component={AdminExamResult}
-        />
-        <Stack.Screen
-          name="Student Exam Result"
-          component={StudentExamResult}
-        />
-        <Stack.Screen
-          name="Student Time Table"
-          component={AdminTimeTable}
-        />
-        <Stack.Screen
-          name="Student Details"
-          component={AdminAllStudentDetails}
-        />
-        <Stack.Screen
-          name="Student Profile"
-          component={AdminStudentProfile}
-        />
-        <Stack.Screen
-          name="AdminGallery"
-          component={AdminGallery}
-          options={{ title: "Gallery" }}
-        />
-        <Stack.Screen
-          name="adminNotice"
-          component={AdminNotice}
-          options={{ title: "Notice" }}
-        />
-        {/* teacher propertys */}
-        <Stack.Screen
-          name="TeacherAttendance"
-          component={TeacherAttendance}
-          options={{ title: "Attendance" }}
-        />
-        <Stack.Screen
-          name="TeacherHomework"
-          component={TeacherHomework}
-          options={{ title: "HomeWork" }}
-        />
-        <Stack.Screen
-          name="TeacherAddMarks"
-          component={TeacherAddMarks}
-          options={{ title: "Add Marks" }}
-        />
-        <Stack.Screen
-          name="TeacherStudentDetails"
-          component={TeacherStudentDetails}
-          options={{ title: "Student Details" }}
-        />
-        <Stack.Screen
-          name="StudentHomeWork"
-          component={StudentHomeWork}
-          options={{ title: "Home Work" }}
-        />
-        <Stack.Screen
-          name="StudentExamSchedule"
-          component={StudentExamSchedule}
-          options={{ title: "Exam Schedule" }}
-        />
-        <Stack.Screen
-          name="StudentTimeTable"
-          component={StudentTimeTable}
-          options={{ title: "Student TimeTable" }}
-        />
-        <Stack.Screen
-          name="chatList"
-          component={chatList}
-          options={{ title: "All Chats" }}
-        />
-        <Stack.Screen
-          name="chatRoom"
-          component={chatRoom}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="TeacherChat"
-          component={TeacherChat}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="StudentChat"
-          component={StudentChat}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Notice"
-          component={Notice}
-          options={{ title: "Notice" }}
-        />
-        <Stack.Screen
-          name="Transport"
-          component={Transport}
-          options={{ title: "Transport" }}
-        />
-        <Stack.Screen
-          name="MapScreen"
-          component={MapScreen}
-          options={{ title: "Bus Tracking" }}
-        />
-        <Stack.Screen
-          name="TrackStudBus"
-          component={TrackStudBus}
-          options={{ title: "Bus Tracking" }}
-        />
-        <Stack.Screen
-          name="adminTransport"
-          component={adminTransport}
-          options={{ title: "Driver Bus Tracking" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="School Assistant" component={HomeScreen} />
+          <Stack.Screen name="Admin Login" component={AdminLogin} />
+          <Stack.Screen name="Teacher Login" component={TeacherLogin} />
+          <Stack.Screen name="Student & Parent Login" component={StudentAndParentLogin} />
+          <Stack.Screen name="Driver Login" component={DriverLogin} />
+          <Stack.Screen name="Admin Home" component={AdminHome} options={{ headerShown: false }} />
+          <Stack.Screen name="Teacher Home" component={TeacherHome} options={{ headerShown: false }} />
+          <Stack.Screen name="Student & Parent Home" component={StudentAndParentHome} options={{ headerShown: false }} />
+          <Stack.Screen name="Driver Home" component={DriverHome} options={{ headerShown: false }} />
+          {/* admin property */}
+          <Stack.Screen name="Attendence" component={AdminAttendence} />
+          <Stack.Screen name="Class Wise Attendance" component={ClassWiseAttendence} />
+          <Stack.Screen name="StudentAttendance" component={StudentAttendance} options={{ title: "Student Attendance" }} />
+          <Stack.Screen name="Home Work" component={AdminHomeWork} />
+          <Stack.Screen name="AdminExamSchedule" component={ExamSchedule} options={{ title: "Exam Schedule" }} />
+          <Stack.Screen name="Exam Result" component={AdminExamResult} />
+          <Stack.Screen name="Student Exam Result" component={StudentExamResult} />
+          <Stack.Screen name="Student Time Table" component={AdminTimeTable} />
+          <Stack.Screen name="Student Details" component={AdminAllStudentDetails} />
+          <Stack.Screen name="Student Profile" component={AdminStudentProfile} />
+          <Stack.Screen name="AdminGallery" component={AdminGallery} options={{ title: "Gallery" }} />
+          <Stack.Screen name="adminNotice" component={AdminNotice} options={{ title: "Notice" }} />
+          {/* teacher propertys */}
+          <Stack.Screen name="TeacherAttendance" component={TeacherAttendance} options={{ title: "Attendance" }} />
+          <Stack.Screen name="TeacherHomework" component={TeacherHomework} options={{ title: "HomeWork" }} />
+          <Stack.Screen name="TeacherAddMarks" component={TeacherAddMarks} options={{ title: "Add Marks" }} />
+          <Stack.Screen name="TeacherStudentDetails" component={TeacherStudentDetails} options={{ title: "Student Details" }} />
+          <Stack.Screen name="StudentHomeWork" component={StudentHomeWork} options={{ title: "Home Work" }} />
+          <Stack.Screen name="StudentExamSchedule" component={StudentExamSchedule} options={{ title: "Exam Schedule" }} />
+          <Stack.Screen name="StudentTimeTable" component={StudentTimeTable} options={{ title: "Student TimeTable" }} />
+          <Stack.Screen name="chatList" component={chatList} options={{ title: "All Chats" }} />
+          <Stack.Screen name="chatRoom" component={chatRoom} options={{ headerShown: false }} />
+          <Stack.Screen name="TeacherChat" component={TeacherChat} options={{ headerShown: false }} />
+          <Stack.Screen name="StudentChat" component={StudentChat} options={{ headerShown: false }} />
+          <Stack.Screen name="Notice" component={Notice} options={{ title: "Notice" }} />
+          <Stack.Screen name="Transport" component={Transport} options={{ title: "Transport" }} />
+          <Stack.Screen name="MapScreen" component={MapScreen} options={{ title: "Bus Tracking" }} />
+          <Stack.Screen name="TrackStudBus" component={TrackStudBus} options={{ title: "Bus Tracking" }} />
+          <Stack.Screen name="adminTransport" component={adminTransport} options={{ title: "Driver Bus Tracking" }} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </>
   );
 }

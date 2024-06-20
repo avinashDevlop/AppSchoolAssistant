@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Alert, SafeAreaView, ActivityIndicator } from 'react-native';
 import TimeTableView, { genTimeBlock } from 'react-native-timetable';
 import DropDownPicker from 'react-native-dropdown-picker';
 import axios from 'axios';
@@ -14,7 +14,6 @@ const TimeTableViewWrapper = ({
   headerStyle = styles.headerStyle,
   formatDateHeader = 'dddd',
   locale = 'en-US',
-  ...props
 }) => (
   <TimeTableView
     events={events}
@@ -26,18 +25,18 @@ const TimeTableViewWrapper = ({
     headerStyle={headerStyle}
     formatDateHeader={formatDateHeader}
     locale={locale}
-    {...props}
   />
 );
 
 const TimeTable = () => {
   const [classOpen, setClassOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState('7th Class');
+  const [selectedClass, setSelectedClass] = useState('10th Class');
   const [classItems, setClassItems] = useState([]);
   const [sectionOpen, setSectionOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState('Section A');
   const [sectionItems, setSectionItems] = useState([]);
   const [timetableData, setTimetableData] = useState({});
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
     const fetchClassOptions = async () => {
@@ -100,8 +99,10 @@ const TimeTable = () => {
         }
 
         setTimetableData(data);
+        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error('Error fetching timetable data:', error);
+        setLoading(false); // Ensure loading state is handled even in case of errors
       }
     };
 
@@ -139,8 +140,8 @@ const TimeTable = () => {
         if (subject) {
           const startPosition = periods[period].startTime;
           const endPosition = periods[period].endTime;
-          const startTime = timetableData['Monday'][period].startTime;
-          const endTime = timetableData['Monday'][period].endTime;
+          const startTime = timetableData['Monday'][period].startTime; // Fixed day reference here
+          const endTime = timetableData['Monday'][period].endTime; // Fixed day reference here
           timetable.push({
             title: subject,
             day: day,
@@ -156,6 +157,14 @@ const TimeTable = () => {
 
     return timetable;
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -180,7 +189,13 @@ const TimeTable = () => {
             containerStyle={styles.dropdown}
           />
         </View>
-        <TimeTableViewWrapper events={renderTimetable()} onEventPress={onEventPress} />
+        <TimeTableViewWrapper
+          events={renderTimetable()}
+          onEventPress={onEventPress}
+          headerStyle={styles.headerStyle}
+          formatDateHeader={'dddd'}
+          locale={'en-US'}
+        />
       </View>
     </SafeAreaView>
   );
@@ -203,6 +218,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     marginHorizontal: 5,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     paddingBottom: 10,
+    paddingTop: 4, // Ensure you provide a value here
   },
   adminName: {
     flexDirection: "row",
