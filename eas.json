@@ -10,8 +10,7 @@
         "image": "latest"
       },
       "android": {
-        "image": "latest",
-        "buildType": "apk"
+        "image": "latest"
       },
       "channel": "default",
       "cache": {
