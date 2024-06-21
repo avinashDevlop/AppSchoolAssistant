@@ -1,137 +1,304 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Alert, SafeAreaView } from "react-native";
-import TimeTableView, { genTimeBlock } from "react-native-timetable";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  Button,
+  Animated,
+  ScrollView,
+} from 'react-native';
+import api from '../../../api';
 
-// Wrapper to handle default props
-const TimeTableViewWrapper = ({
-  events,
-  pivotTime,
-  pivotEndTime,
-  pivotDate,
-  nDays,
-  onEventPress,
-  headerStyle,
-  formatDateHeader,
-  locale,
-}) => (
-  <TimeTableView
-    events={events}
-    pivotTime={pivotTime}
-    pivotEndTime={pivotEndTime}
-    pivotDate={pivotDate}
-    nDays={nDays}
-    onEventPress={onEventPress}
-    headerStyle={headerStyle}
-    formatDateHeader={formatDateHeader}
-    locale={locale}
-  />
-);
-
-const App = ({ route }) => {
+const TimeTable = ({ route }) => {
   const { className, section } = route.params;
-  const [selectedClass] = useState(className);
-  const [selectedSection] = useState(section);
-  const [timetableData, setTimetableData] = useState({});
+
+  const [timetableData, setTimetableData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCellDetails, setSelectedCellDetails] = useState({});
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     const fetchTimetableData = async () => {
+      setError('');
+      setLoading(true);
       try {
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const data = {};
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const periods = 9;
+        const data = Array(periods).fill(null).map(() => Array(days.length).fill(''));
 
-        for (const day of days) {
-          const url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/SchoolTimeTable/${selectedClass}/${selectedSection}/${day}.json`;
-          const response = await axios.get(url);
+        // Get Monday times
+        const mondayUrl = `SchoolTimeTable/${className}/${section}/Monday.json`;
+        const mondayResponse = await api.get(mondayUrl);
+        const mondayData = mondayResponse.data;
+
+        for (let i = 0; i < days.length; i++) {
+          const day = days[i];
+          const url = `SchoolTimeTable/${className}/${section}/${day}.json`;
+          const response = await api.get(url);
           if (response.data !== null) {
-            data[day] = response.data;
+            const dayData = response.data;
+            for (let j = 0; j < periods; j++) {
+              const period = `Period-${j + 1}`;
+              data[j][i] = {
+                subjectName: dayData[period]?.subjectName || '',
+                startTime: mondayData[period]?.startTime || '', // Take from Monday
+                endTime: mondayData[period]?.endTime || '', // Take from Monday
+              };
+            }
           }
         }
 
         setTimetableData(data);
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching timetable data:", error);
+        console.error('Error fetching timetable data:', error);
+        setError('Failed to load timetable data. Please try again.');
+        setLoading(false);
       }
     };
 
-    fetchTimetableData();
-  }, [selectedClass, selectedSection]);
-
-  const onEventPress = (evt) => {
-    const { title, firstTime, lastTime, day, period } = evt;
-    Alert.alert(
-      "Event Details",
-      `Day: ${day}\nPeriod: ${period}\nSubject: ${title}\nStart Time: ${firstTime}\nEnd Time: ${lastTime}`
-    );
-  };
-
-  const renderTimetable = () => {
-    const periods = {
-      "Period-1": { startTime: 1, endTime: 2 },
-      "Period-2": { startTime: 2, endTime: 3 },
-      "Period-3": { startTime: 3, endTime: 4 },
-      "Period-4": { startTime: 4, endTime: 5 },
-      "Period-5": { startTime: 5, endTime: 6 },
-      "Period-6": { startTime: 6, endTime: 7 },
-      "Period-7": { startTime: 7, endTime: 8 },
-      "Period-8": { startTime: 8, endTime: 9 },
-      "Period-9": { startTime: 9, endTime: 10 },
-    };
-
-    const timetable = [];
-
-    for (const day in timetableData) {
-      for (const period in timetableData[day]) {
-        const subject = timetableData[day][period]?.subjectName;
-        if (subject) {
-          const startPosition = periods[period].startTime;
-          const endPosition = periods[period].endTime;
-          const startTime = timetableData[day][period].startTime;
-          const endTime = timetableData[day][period].endTime;
-          timetable.push({
-            title: subject,
-            day: day,
-            period: period,
-            firstTime: startTime,
-            lastTime: endTime,
-            startTime: genTimeBlock(day.substring(0, 3).toUpperCase(), startPosition),
-            endTime: genTimeBlock(day.substring(0, 3).toUpperCase(), endPosition),
-          });
-        }
-      }
+    if (className && section) {
+      fetchTimetableData();
     }
+  }, [className, section]);
 
-    return timetable;
+  const handleCellPress = (subject, period, dayIndex) => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const cellData = timetableData[period][dayIndex];
+
+    setSelectedCellDetails({
+      period: `Period-${period + 1}`,
+      subject: cellData.subjectName,
+      day: days[dayIndex],
+      startingTime: convertTo12HourFormat(cellData.startTime),
+      endingTime: convertTo12HourFormat(cellData.endTime),
+    });
+    setModalVisible(true);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
+
+  const convertTo12HourFormat = (time) => {
+    if (!time) return '';
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  };
+
+  const renderHeader = () => (
+    <View style={styles.headerRow}>
+      <Text style={styles.headerCell}>Mon</Text>
+      <Text style={styles.headerCell}>Tue</Text>
+      <Text style={styles.headerCell}>Wed</Text>
+      <Text style={styles.headerCell}>Thu</Text>
+      <Text style={styles.headerCell}>Fri</Text>
+      <Text style={styles.headerCell}>Sat</Text>
+    </View>
+  );
+
+  const renderRow = (rowData, rowIndex) => (
+    <View key={rowIndex} style={styles.row}>
+      <Text style={styles.periodCell}>{rowIndex + 1}</Text>
+      {rowData.map((cellData, columnIndex) => (
+        <TouchableOpacity
+          key={columnIndex}
+          style={[styles.cell, { backgroundColor: getColor(cellData.subjectName) }]}
+          onPress={() => handleCellPress(cellData.subjectName, rowIndex, columnIndex)}
+        >
+          <Text style={[styles.cellText, { textAlign: 'center', overflow: 'hidden', numberOfLines: 1 }]}>
+            {cellData.subjectName || ''}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  const getColor = (subject) => {
+    if (!subject) return '#FFFFFF'; // Default color for undefined subjects
+
+    switch (subject.trim().toLowerCase()) {
+      case 'telugu':
+        return '#F3D9DF';
+      case 'english':
+        return '#EDE7F6';
+      case 'hindi':
+        return '#FFF9C4';
+      case 'physics':
+        return '#B3E5FC';
+      case 'biology':
+        return '#DCEDC8';
+      case 'social':
+        return '#FFE0B2';
+      case 'computer':
+        return '#D1C4E9';
+      case 'break':
+        return '#FFCCBC';
+      case 'science':
+        return '#FaC6D2';
+      case 'drawing':
+        return '#FFCDF4';
+      case 'maths':
+        return '#FFCDD2';
+      default:
+        return '#F1F1F1';
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <Button title="Retry" onPress={() => { setError(''); setLoading(true); fetchTimetableData(); }} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <TimeTableViewWrapper
-          events={renderTimetable()}
-          onEventPress={onEventPress}
-          pivotTime={1}
-          pivotEndTime={10}
-          pivotDate={genTimeBlock("mon")}
-          nDays={6}
-          headerStyle={styles.headerStyle}
-          formatDateHeader="dddd"
-          locale="en-US"
-        />
-      </View>
+      <ScrollView horizontal>
+        <View style={styles.container}>
+          {renderHeader()}
+          {timetableData.map((rowData, rowIndex) => renderRow(rowData, rowIndex))}
+
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Period Details</Text>
+                <Text style={styles.modalText}>Period: {selectedCellDetails.period}</Text>
+                <Text style={styles.modalText}>Subject: {selectedCellDetails.subject}</Text>
+                <Text style={styles.modalText}>Day: {selectedCellDetails.day}</Text>
+                <Text style={styles.modalText}>Starting Time: {selectedCellDetails.startingTime}</Text>
+                <Text style={styles.modalText}>Ending Time: {selectedCellDetails.endingTime}</Text>
+                <Pressable style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </Pressable>
+              </View>
+            </Animated.View>
+          </Modal>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  headerStyle: {
-    backgroundColor: "#81E1B8",
-  },
   container: {
     flex: 1,
-    padding: 4,
-    backgroundColor: "#fff",
+    padding: 16,
+    backgroundColor: '#F5F5F5',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    marginLeft: 35,
+    width: 520,
+  },
+  headerCell: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  row: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    width: 550,
+  },
+  periodCell: {
+    flex: 0.5,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    paddingVertical: 10,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  cell: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    padding: 10,
+    margin: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  cellText: {
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 
+
+16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#2196F3',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
-export default App;
+export default TimeTable;
