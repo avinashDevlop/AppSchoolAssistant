@@ -12,13 +12,13 @@ const StudentAttendance = ({ route }) => {
   const [noOfPresents, setNoOfPresents] = useState(0);
   const [noOfAbsents, setNoOfAbsents] = useState(0);
   const [computedWorkingDays, setComputedWorkingDays] = useState(0);
-console.log(route.params)
+
   const fetchAttendanceData = async () => {
     try {
       const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${className}/Section ${section}.json`);
       const data = response.data;
 
-      const monthMap = {
+      const monthMap = {  
         "january": "01",
         "february": "02",
         "march": "03",
@@ -41,8 +41,7 @@ console.log(route.params)
       for (const month in data) {
         for (const date in data[month]) {
           const attendanceRecord = data[month][date];
-          const formattedDate = `${presentYear}-${monthMap[month.toLowerCase()]}-${date.split('_')[1]}`;
-
+          const formattedDate = `${presentYear}-${monthMap[month.toLowerCase()]}-${date.split('_')[1].padStart(2, '0')}`;
           if (attendanceRecord.isHoliday) {
             formattedData[formattedDate] = { selected: true, marked: false, selectedColor: '#B38A3C' }; // Yellow for Holiday
           } else {

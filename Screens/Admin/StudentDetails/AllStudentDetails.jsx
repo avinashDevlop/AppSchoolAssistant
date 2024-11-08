@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -18,7 +18,14 @@ const AllStudentDetails = () => {
   const [studentData, setStudentData] = useState([]);
 
   const tableHead = ['SI no.', 'Student Name', 'Gender', 'Grade', 'Attend'];
-  const widthArr = [35, 125, 60, 60, 60];
+  const screenWidth = Dimensions.get('window').width;
+  const widthArr = [
+    screenWidth * 0.1,  // SI no.
+    screenWidth * 0.4,  // Student Name
+    screenWidth * 0.15, // Gender
+    screenWidth * 0.15, // Grade
+    screenWidth * 0.2   // Attend
+  ];
 
   const handleRowPress = (studentDetails, index) => {
     navigation.navigate('Student Profile', { studentDetails, index });
@@ -125,15 +132,12 @@ const AllStudentDetails = () => {
         const response = await axios.get(url);
         const data = response.data || {};
 
-        // Fetch grade data
         const gradeResponse = await axios.get(
           `https://studentassistant-18fdd-default-rtdb.firebaseio.com/ExamMarks/${selectedClass}/${selectedSection}.json`
         );
         const allExamData = gradeResponse.data || {};
-        const examKeys = Object.keys(allExamData);
-        const firstExamKey = examKeys[0];
-        const firstExamDetails = allExamData[firstExamKey] || {};
-        const marksData = firstExamDetails?.studentResults || {};
+        const firstExamKey = Object.keys(allExamData)[0];
+        const marksData = allExamData[firstExamKey]?.studentResults || {};
 
         const formattedData = Object.values(data).map((student, index) => {
           const studentFullName = `${student?.surname || ''} ${student?.name || ''}`;
@@ -198,7 +202,7 @@ const AllStudentDetails = () => {
                   studentData.map((rowData, rowIndex) => (
                     <TouchableOpacity key={rowIndex} onPress={() => handleRowPress(rowData[5], rowIndex)}>
                       <Row
-                        data={rowData.slice(0, 5)}  // Exclude the full student object from display
+                        data={rowData.slice(0, 5)}
                         widthArr={widthArr}
                         style={[
                           styles.row,
@@ -241,23 +245,24 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 
-
-8,
+    borderRadius: 8,
   },
-  detail: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  listContainer: {
-    flexGrow: 1,
-  },
-  header: { height: 40, backgroundColor: '#b8ebe0', borderBottomWidth: 1 },
-  text: { textAlign: 'center', fontWeight: '900' },
+  header: { height: 40, backgroundColor: '#b8ebe0', textAlign: 'center' },
+  text: { textAlign: 'center', fontWeight: '400' },
   dataWrapper: { marginTop: -1 },
-  row: { height: 40 },
-  cellText: { textAlign: 'center', fontWeight: '500', paddingVertical: 10 },
-  noDataText: { textAlign: 'center', marginTop: 20, fontSize: 16, color: '#999' }
+  row: { height: 45 },
+  cellText: {
+    fontSize: 13,
+    padding: 5,
+    textAlign: 'center',
+    color: '#333',
+  },
+  noDataText: {
+    textAlign: 'center',
+    fontSize: 18,
+    padding: 15,
+    color: '#888',
+  },
 });
 
 export default AllStudentDetails;

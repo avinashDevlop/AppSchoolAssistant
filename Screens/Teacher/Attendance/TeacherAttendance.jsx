@@ -6,7 +6,7 @@ import {
   Text,
   Switch,
   TouchableOpacity,
-  Alert,
+  Alert, Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Table, Row } from "react-native-table-component";
@@ -15,11 +15,12 @@ import axios from "axios";
 
 const AttendancePage = () => {
   const navigation = useNavigation();
+  const screenWidth = Dimensions.get("window").width;
 
   const [Classopen, setClassOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState("10th Class");
   const [classItems, setClassItems] = useState([]);
-
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [Sectionopen, setSectionOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState();
   const [sectionItems, setSectionItems] = useState([]);
@@ -28,7 +29,6 @@ const AttendancePage = () => {
   const [studentData, setStudentData] = useState([]);
   const [currentDate, setCurrentDate] = useState("");
 
-  const [section,setSection] = useState("");
 
   useEffect(() => {
     const now = new Date();
@@ -117,30 +117,49 @@ const AttendancePage = () => {
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
+        const now = new Date();
+        const month = now.toLocaleString("default", { month: "long" }).toLowerCase();
+        const date = now.getDate();
+  
         const response = await axios.get(
           `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}/${selectedSection}.json`
         );
         const data = response.data;
-
+  
         const formattedData = data && typeof data === 'object'
-          ? Object.values(data).map((student, index) => [
-              index + 1,
-              `${student.surname} ${student.name}`, // Combine name and surname
-              student.gender,
-              student.attendance ?? false, // Initialize attendance to false if not present
-            ])
+          ? await Promise.all(Object.values(data).map(async (student, index) => {
+              let attendance = false;
+              try {
+                const attendanceResponse = await axios.get(
+                  `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${selectedClass}/${selectedSection}/${month}/${month}_${date}/present.json`
+                );
+                const presentData = attendanceResponse.data ? Object.values(attendanceResponse.data) : [];
+                attendance = presentData.includes(`${student.surname} ${student.name}`);
+              } catch (attendanceError) {
+                console.error("Error fetching attendance data:", attendanceError);
+              }
+  
+              return [
+                index + 1,
+                `${student.surname} ${student.name}`,
+                student.gender,
+                attendance,
+              ];
+            }))
           : [];
-
+  
         setStudentData(formattedData);
+        setIsDataLoaded(true); // Mark data as loaded once fetched
       } catch (error) {
         console.error("Error fetching student data:", error);
       }
     };
-
+  
     if (selectedClass && selectedSection) {
       fetchStudentData();
     }
   }, [selectedClass, selectedSection, dataArray]);
+  
 
   const handleToggleAttendanceInTable = (index) => {
     const newData = [...studentData];
@@ -149,33 +168,35 @@ const AttendancePage = () => {
   };
 
   const handleViewPress = async () => {
+    if (!isDataLoaded) return; // Prevent navigation if data is not loaded
+  
     try {
       const now = new Date();
       const month = now.toLocaleString("default", { month: "long" }).toLowerCase();
       const date = now.getDate();
-
+  
       const presentResponse = await axios.get(
         `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${selectedClass}/${selectedSection}/${month}/${month}_${date}/present.json`
       );
       const absentResponse = await axios.get(
         `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${selectedClass}/${selectedSection}/${month}/${month}_${date}/absent.json`
       );
-
+  
       const presentData = presentResponse.data ? Object.values(presentResponse.data) : [];
       const absentData = absentResponse.data ? Object.values(absentResponse.data) : [];
       const present = presentData.length;
       const absent = absentData.length;
-      
-      if(selectedSection === 'Section A'){
-        setSection('A')
-      }else if(selectedSection === 'Section B'){
-        setSection('B')
-      }else{
-        setSection('C')
-      }
+  
+      const sectionMap = {
+        "Section A": "A",
+        "Section B": "B",
+        "Section C": "C",
+      };
+      const mappedSection = sectionMap[selectedSection] || "C";
+  
       navigation.navigate("Class Wise Attendance", {
         className: selectedClass,
-        section: section,
+        section: mappedSection,
         present,
         absent,
         presentData,
@@ -186,54 +207,54 @@ const AttendancePage = () => {
     }
   };
 
-  const tableHead = ["SI no.", "Name", "Gender", "Attendance"];
-  const widthArr = [50, 120, 80, 90];
+    const tableHead = ["SI no.", "Name", "Gender", "Attendance"];
+    const widthArr = [screenWidth * 0.15, screenWidth * 0.4, screenWidth * 0.2, screenWidth * 0.25];
 
-  const handleSaveChanges = async () => {
-    try {
-      const now = new Date();
-      const month = now
-        .toLocaleString("default", { month: "long" })
-        .toLowerCase();
-      const date = now.getDate();
-      const presentStudentsData = studentData.filter((student) => student[3]);
-      const absentStudentsData = studentData.filter((student) => !student[3]);
-      const attendanceData = {
-       
+    const handleSaveChanges = async () => {
+      try {
+        const now = new Date();
+        const month = now
+          .toLocaleString("default", { month: "long" })
+          .toLowerCase();
+        const date = now.getDate();
+        const presentStudentsData = studentData.filter((student) => student[3]);
+        const absentStudentsData = studentData.filter((student) => !student[3]);
+        const attendanceData = {
+        
 
- present: presentStudentsData.map((student) => `${student[1]}`),
-        absent: absentStudentsData.map((student) => `${student[1]}`),
-      };
+  present: presentStudentsData.map((student) => `${student[1]}`),
+          absent: absentStudentsData.map((student) => `${student[1]}`),
+        };
 
-      Alert.alert(
-        "Submit Attendance",
-        `Are you sure you want to submit the attendance?\nPresent: ${presentStudentsData.length}, Absent: ${absentStudentsData.length}`,
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Submit",
-            onPress: async () => {
-              try {
-                await axios.put(
-                  `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${selectedClass}/${selectedSection}/${month}/${month}_${date}.json`,
-                  attendanceData
-                );
-                Alert.alert("Success", "Attendance submitted successfully.");
-              } catch (error) {
-                Alert.alert("Error", "Failed to submit attendance.");
-                console.error("Error submitting attendance:", error);
-              }
+        Alert.alert(
+          "Submit Attendance",
+          `Are you sure you want to submit the attendance?\nPresent: ${presentStudentsData.length}, Absent: ${absentStudentsData.length}`,
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
             },
-          },
-        ]
-      );
-    } catch (error) {
-      console.error("Error in submitRegularAttendanceToDatabase:", error);
-    }
-  };
+            {
+              text: "Submit",
+              onPress: async () => {
+                try {
+                  await axios.put(
+                    `https://studentassistant-18fdd-default-rtdb.firebaseio.com/Attendance/StudAttendance/${selectedClass}/${selectedSection}/${month}/${month}_${date}.json`,
+                    attendanceData
+                  );
+                  Alert.alert("Success", "Attendance submitted successfully.");
+                } catch (error) {
+                  Alert.alert("Error", "Failed to submit attendance.");
+                  console.error("Error submitting attendance:", error);
+                }
+              },
+            },
+          ]
+        );
+      } catch (error) {
+        console.error("Error in submitRegularAttendanceToDatabase:", error);
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -261,10 +282,14 @@ const AttendancePage = () => {
         />
       </View>
       <View style={styles.dateContainer}>
+        <View>
         <Text style={styles.currentDate}>{currentDate}</Text>
-        <TouchableOpacity style={styles.viewButton} onPress={handleViewPress}>
+        </View>
+        <View>
+        <TouchableOpacity style={styles.viewButton} onPress={handleViewPress} disabled={!isDataLoaded}>
           <Text style={styles.viewButtonText}>View</Text>
         </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.containerTable}>
         <ScrollView horizontal={true}>
@@ -353,15 +378,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
     width: "100%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
   currentDate: {
-    fontSize: 18,
+    fontSize: 16,
   },
   viewButton: {
     backgroundColor: "#4CAF50",
     paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     borderRadius: 5,
   },
   viewButtonText: {

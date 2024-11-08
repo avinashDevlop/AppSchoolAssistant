@@ -5,11 +5,14 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { Table, Row } from "react-native-table-component";
 import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
 import axios from "axios";
+const { width } = Dimensions.get("window");
+
 
 const HomeworkScreen = () => {
   const navigation = useNavigation();
@@ -34,8 +37,27 @@ const HomeworkScreen = () => {
 
   const [tableData, setTableData] = useState([]);
 
-  const tableHead = ["SI no.", "Name", "Gender", "Grade", "Obtain Marks"];
-  const widthArr = [28, 132, 60, 60, 60];
+  const tableHead = ["SI no.", "Name", "Gender", "Grade", "Obtain Marks", "Max Marks"];
+  const widthArr = [
+    width * 0.12, 
+    width * 0.35,
+    width * 0.15,
+    width * 0.15,
+    width * 0.2,
+    width * 0.2,
+  ];
+
+  // Allowed test names
+  const allowedTestNames = [
+    "Class Test",
+    "FORMATIVE ASSESSMENT - I",
+    "FORMATIVE ASSESSMENT - II",
+    "SUMMATIVE ASSESSMENT - I",
+    "FORMATIVE ASSESSMENT - III",
+    "FORMATIVE ASSESSMENT - IV",
+    "SUMMATIVE ASSESSMENT - II",
+    "SUMMATIVE ASSESSMENT - III",
+  ];
 
   const handleRowPress = (rowData) => {
     const [_, studentName, gender] = rowData;
@@ -45,6 +67,7 @@ const HomeworkScreen = () => {
       gender,
       selectedClass,
       selectedSection,
+      selectedTestName,
     });
   };
 
@@ -131,11 +154,14 @@ const HomeworkScreen = () => {
         }
         const data = await response.json();
         if (data) {
-          const names = Object.keys(data).map((examName) => ({
-            label: examName,
-            value: examName,
-          }));
+          const names = Object.keys(data)
+            .filter((examName) => allowedTestNames.includes(examName)) // Filter by allowed test names
+            .map((examName) => ({
+              label: examName,
+              value: examName,
+            }));
           setExamResultItems(names);
+
           // Select the first test by default if test names are available
           if (names.length > 0) {
             setSelectedExamResult(names[0].value);
@@ -161,7 +187,9 @@ const HomeworkScreen = () => {
           `https://studentassistant-18fdd-default-rtdb.firebaseio.com/ExamMarks/${selectedClass}/${selectedSection}.json`
         );
         const data = response.data || {};
-        const testNames = Object.keys(data);
+        const testNames = Object.keys(data).filter((name) =>
+          allowedTestNames.includes(name)
+        ); // Filter by allowed test names
         setTestNames(testNames);
         setSelectedTestName(testNames[0] || "");
       } catch (error) {
@@ -181,27 +209,28 @@ const HomeworkScreen = () => {
           `https://studentassistant-18fdd-default-rtdb.firebaseio.com/ExamMarks/${selectedClass}/${selectedSection}/${selectedExamResult}.json`
         );
         const conductedOnData = response.data?.conductedOn || {};
-        // Update state with the first and last dates
         setFirstDate(conductedOnData.firstDate);
         setLastDate(conductedOnData.lastDate);
 
         const marksData = response.data?.studentResults || {};
-        const studentResultsArray = Object.entries(marksData).map(([name, result], index) => {
-          return {
-            SINo: index + 1,
-            Name: name,
-            Gender: result.gender,
-            "Grade": result.grade,
-            "Obtain Marks": result.obtainMarks,
-          };
-        });
+        const studentResultsArray = Object.entries(marksData).map(
+          ([name, result], index) => {
+            return {
+              SINo: index + 1,
+              Name: name,
+              Gender: result.gender,
+              Grade: result.grade,
+              "Obtain Marks": result.obtainMarks,
+              "Max Marks": result.totalMarks,
+            };
+          }
+        );
         setTableData(studentResultsArray);
-        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     if (selectedClass && selectedSection && selectedExamResult) {
       fetchData();
     }
@@ -246,69 +275,39 @@ const HomeworkScreen = () => {
           containerStyle={styles.dropdown}
         />
       </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.text}>Connected on: {firstDate ? firstDate : "N/A"} - {lastDate ? lastDate : "N/A"}</Text>
-      </View>
-      <View>
-        <ScrollView horizontal={true}>
-          <View>
-            <Table borderStyle={{ borderColor: "#C10036" }}>
-              <Row
-                data={tableHead}
-                widthArr={widthArr}
-                style={styles.header}
-                textStyle={styles.text}
-              />
+
+      <ScrollView horizontal>
+        <View>
+          <Table borderStyle={styles.tableBorder}>
+            <Row
+              data={tableHead}
+              widthArr={widthArr}
+              style={styles.header}
+              textStyle={styles.text}
+            />
+          </Table>
+          <ScrollView>
+            <Table borderStyle={styles.tableBorder}>
+              {tableData.map((rowData, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleRowPress(Object.values(rowData))}
+                >
+                  <Row
+                    data={Object.values(rowData)}
+                    widthArr={widthArr}
+                    style={[
+                      styles.row,
+                      index % 2 && { backgroundColor: "#F7F6E7" },
+                    ]}
+                    textStyle={styles.text}
+                  />
+                </TouchableOpacity>
+              ))}
             </Table>
-            <ScrollView style={styles.dataWrapper}>
-              <Table>
-                {tableData && Array.isArray(tableData) ? (
-                  tableData.map((rowData, rowIndex) => (
-                    <TouchableOpacity
-                      key={rowIndex}
-                      onPress={() => handleRowPress(Object.values(rowData))}
-                    >
-                      <Row
-                        data={Object.values(rowData).map((cellData, cellIndex) => {
-                          let cellStyle = {
-                            borderBottomWidth: 1,
-                            borderColor: "#C1C0B9",
-                          };
-                          if (cellIndex === 3) {
-                            cellStyle = {
-                              ...cellStyle,
-                              color: "#2f9c09",
-                              fontWeight: "700",
-                            };
-                          } else if (cellIndex === 4) {
-                            cellStyle = {
-                              ...cellStyle,
-                              color: "#fd1717",
-                              fontWeight: "700",
-                            };
-                          }
-                          return (
-                           <Text style={[styles.cellText, cellStyle]}>
-                              {cellData}
-                            </Text>
-                          );
-                        })}
-                        widthArr={widthArr}
-                        style={{
-                          ...styles.row,
-                          backgroundColor: rowIndex % 2 === 1 ? "#eff0f2" : "",
-                        }}
-                      />
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text>No data available</Text>
-                )}
-              </Table>
-            </ScrollView>
-          </View>
-        </ScrollView>
-      </View>
+          </ScrollView>
+        </View>
+      </ScrollView>
     </View>
   );
 };

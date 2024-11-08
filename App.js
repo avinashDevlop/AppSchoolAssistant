@@ -40,6 +40,7 @@ import Transport from './Screens/Admin/Transport/Transport';
 import MapScreen from './Screens/Driver/mapScreen';
 import TrackStudBus from "./Screens/StudentAndParent/Transport/TrackStudBus";
 import adminTransport from "./Screens/Admin/Transport/adminTransport";
+import TeacherAttendanceHome from "./Screens/Teacher/TeacherAttendance/TeacherAttendance";
 import * as Updates from 'expo-updates';
 
 const Stack = createStackNavigator();
@@ -99,6 +100,7 @@ export default function App() {
           <Stack.Screen name="TeacherHomework" component={TeacherHomework} options={{ title: "HomeWork" }} />
           <Stack.Screen name="TeacherAddMarks" component={TeacherAddMarks} options={{ title: "Add Marks" }} />
           <Stack.Screen name="TeacherStudentDetails" component={TeacherStudentDetails} options={{ title: "Student Details" }} />
+          <Stack.Screen name="RealTeacherAttendance" component={TeacherAttendanceHome} options={{ title: "My Attendance" }} />
           <Stack.Screen name="StudentHomeWork" component={StudentHomeWork} options={{ title: "Home Work" }} />
           <Stack.Screen name="StudentExamSchedule" component={StudentExamSchedule} options={{ title: "Exam Schedule" }} />
           <Stack.Screen name="StudentTimeTable" component={StudentTimeTable} options={{ title: "Student TimeTable" }} />

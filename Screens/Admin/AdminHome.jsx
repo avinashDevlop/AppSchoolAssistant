@@ -1,74 +1,59 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons"; // Import MaterialIcons from react-native-vector-icons
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const AdminHome = ({ navigation }) => {
   const handleLogout = () => {
-    // Implement logout functionality (e.g., clear user session, navigate to login screen)
-    navigation.navigate("School Assistant"); // Navigate to the admin login screen
-  };
-  const features = [
-    {
-      destination: "Attendence",
-      name: "Attendance",
-      iconName: "event-note",
-    },
-    { destination: "Home Work", name: "Home Work", iconName: "assignment" },
-    { destination: "AdminExamSchedule", name: "Exam Schedule", iconName: "event" },
-    { destination: "Exam Result", name: "Exam Result", iconName: "school" },
-    { destination: "Student Time Table", name: "Time Table", iconName: "schedule" },
-    {
-      destination: "Student Details",
-      name: "Student Details",
-      iconName: "people",
-    },
-    {
-      destination: "chatList",
-      name: "Chat",
-      iconName: "chat",
-    },
-    { destination: "AdminGallery", name: "Gallery", iconName: "photo-library" },
-    {
-      destination: "Transport",
-      name: "Bus Tracking",
-      iconName: "directions-bus",
-    },
-    {
-      destination: "adminNotice",
-      name: "Notice",
-      iconName: "announcement",
-    },
-  ];
-
-  const FeatureItem = ({ destination, name, iconName }) => {
-    return (
-      <TouchableOpacity
-        style={styles.featureItem}
-        onPress={() => {
-          navigation.navigate(destination);
-        }}
-      >
-        <Icon name={iconName} size={60} color="#007bff" />
-        <Text style={styles.featureName}>{name}</Text>
-      </TouchableOpacity>
+    Alert.alert(
+      "Logout Confirmation",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "Yes", onPress: () => navigation.navigate("School Assistant") },
+      ],
+      { cancelable: false }
     );
   };
+
+  const features = [
+    { destination: "Attendence", name: "Attendance", iconName: "event-note" },
+    { destination: "Home Work", name: "Home Work", iconName: "assignment" },
+    { destination: "AdminExamSchedule", name: "Exam Schedule", iconName: "event" },
+    { destination: "Exam Result", name: "Exam Results", iconName: "school" },
+    { destination: "Student Time Table", name: "Time Table", iconName: "schedule" },
+    { destination: "Student Details", name: "Student Details", iconName: "people" },
+    { destination: "chatList", name: "Chat", iconName: "chat" },
+    { destination: "AdminGallery", name: "Gallery", iconName: "photo-library" },
+    { destination: "Transport", name: "Bus Tracking", iconName: "directions-bus" },
+    { destination: "adminNotice", name: "Notice", iconName: "announcement" },
+  ];
+
+  const FeatureItem = ({ destination, name, iconName }) => (
+    <TouchableOpacity
+      style={styles.featureItem}
+      onPress={() => navigation.navigate(destination)}
+    >
+      <Icon name={iconName} size={60} color="#007bff" />
+      <Text style={styles.featureName}>{name}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.adminName}>
           <Icon name="person" size={35} color="#007bff" style={styles.icon} />
-          <Text style={styles.title}>Jaswanth</Text>
+          <Text style={styles.title}>stjohnsmyd</Text>
         </View>
-        <View>
-          <TouchableOpacity onPress={handleLogout}>
-            <Text style={styles.logoutButtonTitle}>Logout</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={handleLogout}>
+          <Text style={styles.logoutButtonTitle}>Logout</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.featuresContainer}>
           {features.map((feature, index) => (
             <FeatureItem
@@ -79,7 +64,7 @@ const AdminHome = ({ navigation }) => {
             />
           ))}
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -122,18 +107,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   content: {
-    flex: 1,
     alignItems: "center",
   },
   featuresContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between", // Adjust this to control spacing between features
+    justifyContent: "space-between",
     width: "100%",
   },
   featureItem: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 30,
     width: "48%",
   },
   featureName: {

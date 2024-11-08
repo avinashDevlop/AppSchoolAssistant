@@ -1,93 +1,101 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Alert, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios'; 
+import axios from 'axios';
 
 const TeacherLogin = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
-    // Fetch teacher data from Firebase using Axios
+    setLoading(true); // Start loading
+
     axios.get('https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Teachers.json')
       .then(response => {
         const teachers = response.data;
-        // console.log('Fetched teachers data:', teachers); // Log fetched data
-        // Trim inputs to remove leading/trailing spaces
         const trimmedUsername = username.trim();
         const trimmedPassword = password.trim();
-        // Check if there's a teacher with the entered username
         const teacher = Object.values(teachers).find(teacher => teacher.userName === trimmedUsername);
-        //teacher && teacher.password === trimmedPassword
+
         if (teacher && teacher.password === trimmedPassword) {
-          // Navigate to teacher home on successful login
-          navigation.navigate('Teacher Home',teacher);
+          setLoading(false); // Stop loading
+          navigation.navigate('Teacher Home', teacher);
         } else {
+          setLoading(false); // Stop loading
           Alert.alert('Invalid credentials', 'Please enter correct username and password');
         }
       })
       .catch(error => {
+        setLoading(false); // Stop loading
         console.error('Error fetching teacher data:', error);
         Alert.alert('Error', 'An error occurred while trying to login. Please try again later.');
       });
   };
-  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   return (
-    <View style={styles.container}>
-      {/* Teacher icon */}
-      <Ionicons name="school-outline" size={100} color="#007bff" style={styles.icon} />
-      <Text style={styles.title}>Teacher</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Ionicons name="school-outline" size={100} color="#007bff" style={styles.icon} />
+        <Text style={styles.title}>Teacher</Text>
 
-      {/* Username input */}
-      <Text style={styles.label}>Username:</Text>
-      <TextInput
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Enter username"
-        autoCapitalize="none"
-      />
-
-      {/* Password input */}
-      <Text style={styles.label}>Password:</Text>
-      <View style={styles.passwordContainer}>
+        <Text style={styles.label}>Username:</Text>
         <TextInput
-          style={styles.passwordInput}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Enter password"
-          secureTextEntry={!showPassword}
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Enter username"
+          autoCapitalize="none"
         />
-        <Ionicons
-          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-          size={24}
-          color="#333"
-          style={styles.passwordIcon}
-          onPress={togglePasswordVisibility}
-        />
-      </View>
 
-      {/* Login button */}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonTitle}>Login</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.label}>Password:</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter password"
+            secureTextEntry={!showPassword}
+          />
+          <Ionicons
+            name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+            size={24}
+            color="#333"
+            style={styles.passwordIcon}
+            onPress={togglePasswordVisibility}
+          />
+        </View>
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#007bff" style={styles.loadingIndicator} />
+        ) : (
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonTitle}>Login</Text>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
@@ -134,14 +142,20 @@ const styles = StyleSheet.create({
   passwordIcon: {
     paddingHorizontal: 10,
   },
-  loginButtonTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+  loginButton: {
     backgroundColor: '#007bff',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 5,
+    marginTop: 20,
+  },
+  loginButtonTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
 });
 

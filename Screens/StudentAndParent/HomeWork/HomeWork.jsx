@@ -4,8 +4,8 @@ import axios from 'axios';
 
 const HomeworkScreen = ({route}) => {
   const { className, section } = route.params;
-  const [ClassName,setClassName] = useState(className);
-  const [Section,setSection] = useState(section);
+  const [ClassName, setClassName] = useState(className);
+  const [Section, setSection] = useState(section);
   const [loading, setLoading] = useState(false);
   const [homeworkData, setHomeworkData] = useState([]);
 
@@ -35,7 +35,6 @@ const HomeworkScreen = ({route}) => {
       } catch (error) {
         setLoading(false);
         console.error("Error fetching all homework entries:", error);
-        // You might want to handle error state here
       }
     };
 
@@ -61,12 +60,16 @@ const HomeworkScreen = ({route}) => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <FlatList
-          data={filteredHomework}
-          renderItem={renderHomeworkItem}
-          keyExtractor={(item, index) => `${item.class}-${item.section}-${item.date}-${index}`}
-          contentContainerStyle={styles.listContainer}
-        />
+        filteredHomework.length > 0 ? (
+          <FlatList
+            data={filteredHomework}
+            renderItem={renderHomeworkItem}
+            keyExtractor={(item, index) => `${item.class}-${item.section}-${item.date}-${index}`}
+            contentContainerStyle={styles.listContainer}
+          />
+        ) : (
+          <Text style={styles.noHomeworkText}>No homeworks are available</Text>
+        )
       )}
     </View>
   );
@@ -92,6 +95,12 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flexGrow: 1,
+  },
+  noHomeworkText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 20,
   },
 });
 

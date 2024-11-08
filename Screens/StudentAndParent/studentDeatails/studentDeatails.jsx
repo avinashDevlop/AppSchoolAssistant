@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, ActivityIndicator, Dimensions } from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -17,74 +17,42 @@ const AllStudentDetails = () => {
   const [dataArray, setDataArray] = useState([]);
   const [studentData, setStudentData] = useState([]);
 
-  const tableHead = ['SI no.', 'Student Name', 'Gender', 'Grade', 'Attend'];
-  const widthArr = [35, 125, 60, 60, 60];
+  const tableHead = ['SI no.', 'Student Name', 'Gender', 'Father Name', 'PHno.'];
+  const screenWidth = Dimensions.get('window').width;
+  const widthArr = [screenWidth * 0.2, screenWidth * 0.4, screenWidth * 0.15, screenWidth * 0.4, screenWidth * 0.2];
 
   const handleRowPress = (studentDetails, index) => {
     navigation.navigate('Student Profile', { studentDetails, index });
   };
 
   useEffect(() => {
-    const fetchClassOptions = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          "https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents.json"
-        );
-        const data = response.data || {};
-
-        const dataArray = Object.entries(data).map(([value, label]) => ({
-          value,
-          label,
-        }));
-        setDataArray(dataArray);
-
-        if (data) {
-          const fetchedOptions = Object.keys(data).map((className) => ({
-            value: className,
-            label: className,
-          }));
-          const options = [
-            { value: '10th Class', label: '10th Class' },
-            { value: '9th Class', label: '9th Class' },
-            { value: '8th Class', label: '8th Class' },
-            { value: '7th Class', label: '7th Class' },
-            { value: '6th Class', label: '6th Class' },
-            { value: '5th Class', label: '5th Class' },
-            { value: '4th Class', label: '4th Class' },
-            { value: '3rd Class', label: '3rd Class' },
-            { value: '2nd Class', label: '2nd Class' },
-            { value: '1st Class', label: '1st Class' },
-            { value: 'UKG', label: 'UKG' },
-            { value: 'LKG', label: 'LKG' },
-            { value: 'Pre-K', label: 'Pre-K' },
-            ...fetchedOptions,
-          ];
-          setClassItems(options);
-        }
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching class options:", error);
-      }
-    };
-
-    fetchClassOptions();
+    setLoading(true);
+    const options = [
+      { value: '10th Class', label: '10th Class' },
+      { value: '9th Class', label: '9th Class' },
+      { value: '8th Class', label: '8th Class' },
+      { value: '7th Class', label: '7th Class' },
+      { value: '6th Class', label: '6th Class' },
+      { value: '5th Class', label: '5th Class' },
+      { value: '4th Class', label: '4th Class' },
+      { value: '3rd Class', label: '3rd Class' },
+      { value: '2nd Class', label: '2nd Class' },
+      { value: '1st Class', label: '1st Class' },
+      { value: 'UKG', label: 'UKG' },
+      { value: 'LKG', label: 'LKG' },
+      { value: 'Pre-K', label: 'Pre-K' },
+    ];
+    setClassItems(options);
+    setLoading(false);
   }, []);
+  
 
   useEffect(() => {
     const fetchSectionOptions = async () => {
       try {
         setLoading(true);
-        let url = "";
 
-        if (dataArray.some((item) => item.value === selectedClass)) {
-          url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents/${selectedClass}.json`;
-        } else {
-          url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}.json`;
-        }
-
-        const response = await axios.get(url);
+        const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}.json`);
         const data = response.data || {};
 
         if (data) {
@@ -111,26 +79,17 @@ const AllStudentDetails = () => {
     const fetchStudentData = async () => {
       try {
         setLoading(true);
-        let url = "";
 
-        if (dataArray.some((item) => item.value === selectedClass)) {
-          url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/previousYearStudents/${selectedClass}/${selectedSection}.json`;
-        } else {
-          url = `https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}/${selectedSection}.json`;
-        }
-
-        const response = await axios.get(url);
+        const response = await axios.get(`https://studentassistant-18fdd-default-rtdb.firebaseio.com/admissionForms/${selectedClass}/${selectedSection}.json`);
         const data = response.data || {};
-
         const formattedData = data ? Object.values(data).map((student, index) => [
           index + 1,
-          student.name,
+          `${student.surname} ${student.name}`,
           student.gender,
-          student.grade,
-          student.attendance,
-          student,  // Add the full student object here for easy access
+          student.fathersName,
+          student.fathersMobileNumber,
+          student,
         ]) : [];
-
         setStudentData(formattedData);
         setLoading(false);
       } catch (error) {
@@ -179,7 +138,8 @@ const AllStudentDetails = () => {
                 {studentData && studentData.length > 0 ? (
                   studentData.map((rowData, rowIndex) => (
                       <Row
-                        data={rowData.slice(0, 5)}  // Exclude the full student object from display
+                        key={rowIndex}
+                        data={rowData.slice(0, 5)}
                         widthArr={widthArr}
                         style={[
                           styles.row,
@@ -205,36 +165,36 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#fff',
-    paddingBottom: 'auto',
   },
   dropdownsContainer: {
     flexDirection: 'row',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   dropdown: {
     flex: 1,
     height: 40,
     marginHorizontal: 5,
   },
-  item: {
-    marginBottom: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+  header: {
+    height: 40,
+    backgroundColor: '#b8ebe0',
   },
-  detail: {
-    fontSize: 16,
-    marginBottom: 5,
+  text: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
-  listContainer: {
-    flexGrow: 1,
+  dataWrapper: {
+    marginTop: -1,
   },
-  header: { height: 40, backgroundColor: '#b8ebe0', borderBottomWidth: 1 },
-  text: { textAlign: 'center', fontWeight: '900' },
-  dataWrapper: { marginTop: -1 },
-  row: { height: 40 },
-  cellText: { textAlign: 'center', fontWeight: '500', paddingVertical: 10 },
+  row: {
+    height: 40,
+  },
+  cellText: {
+    textAlign: 'center',
+    paddingHorizontal: 5,
+    fontSize: 12,
+  },
 });
 
 export default AllStudentDetails;

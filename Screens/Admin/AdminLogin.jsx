@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { signInWithEmailAndPassword } from 'firebase/auth'; 
@@ -10,19 +10,22 @@ const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      // Check if either username or password is empty
       Alert.alert('Missing Information', 'Please enter both username and password');
-      return; // Exit the function early
+      return;
     } 
 
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, username, password); 
+      await signInWithEmailAndPassword(auth, username, password);
       navigation.navigate('Admin Home');
     } catch (error) {
-      Alert.alert('Invalid Credentials','Incorrect username or password');
+      Alert.alert('Invalid Credentials', 'Incorrect username or password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,11 +34,10 @@ const AdminLogin = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Ionicons name="person-circle-outline" size={100} color="#007bff" style={styles.icon} />
       <Text style={styles.title}>Admin</Text>
 
-      {/* Username input */}
       <Text style={styles.label}>Username:</Text>
       <TextInput
         style={styles.input}
@@ -45,7 +47,6 @@ const AdminLogin = () => {
         autoCapitalize="none"
       />
 
-      {/* Password input */}
       <Text style={styles.label}>Password:</Text>
       <View style={styles.passwordContainer}>
         <TextInput
@@ -64,17 +65,20 @@ const AdminLogin = () => {
         />
       </View>
 
-      {/* Login button */}
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonTitle}>Login</Text>
-      </TouchableOpacity>
-    </View>
+      {loading ? (
+        <ActivityIndicator size="large" color="#007bff" />
+      ) : (
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonTitle}>Login</Text>
+        </TouchableOpacity>
+      )}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

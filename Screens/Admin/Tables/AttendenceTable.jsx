@@ -13,7 +13,7 @@ const AttendenceTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       const today = new Date();
-      const day = String(today.getDate()).padStart(2, '0');
+      const day = today.getDate();
       const month = today.toLocaleString('default', { month: 'long' }).toLowerCase();
 
       const classes = ['10th Class', '9th Class', '8th Class', '7th Class', '6th Class', '5th Class', '4th Class', '3rd Class'];
@@ -28,7 +28,6 @@ const AttendenceTable = () => {
             const absentResponse = await api.get(
               `Attendance/StudAttendance/${className}/Section ${section}/${month}/${month}_${day}/absent.json`
             );
-
             const presentData = presentResponse.data ? Object.values(presentResponse.data) : [];
             const absentData = absentResponse.data ? Object.values(absentResponse.data) : [];
 

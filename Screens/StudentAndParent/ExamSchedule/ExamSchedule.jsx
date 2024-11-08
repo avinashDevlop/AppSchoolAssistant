@@ -29,7 +29,19 @@ const ExamSchedule = ({route}) => {
         }
         const data = await response.json();
         if (data) {
-          const names = Object.keys(data);
+          const allowedTestNames = [
+            "Class Test",
+            "FORMATIVE ASSESSMENT - I",
+            "FORMATIVE ASSESSMENT - II",
+            "SUMMATIVE ASSESSMENT - I",
+            "FORMATIVE ASSESSMENT - III",
+            "FORMATIVE ASSESSMENT - IV",
+            "SUMMATIVE ASSESSMENT - II",
+            "SUMMATIVE ASSESSMENT - III",
+          ];
+          const names = data
+          ? Object.keys(data).filter((name) => allowedTestNames.includes(name))
+          : [];
           setTestNames(names);
           // Select the first test by default if test names are available
           if (names.length > 0) {
@@ -132,7 +144,6 @@ const ExamSchedule = ({route}) => {
       <View style={styles.selectionContainer}>
         <Text style={styles.selectionText}>Class: {selectedClass}</Text>
         <Text style={styles.selectionText}>{selectedSection}</Text>
-        <Text style={styles.selectionText}>Exam: {selectedExam}</Text>
       </View>
 
       <ScrollView horizontal={true}>

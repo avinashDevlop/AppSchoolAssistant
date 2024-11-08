@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Animated } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Animated, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
@@ -18,7 +18,14 @@ const DriverHome = ({ route }) => {
   };
 
   const handleLogout = () => {
-    navigation.navigate("School Assistant");
+    Alert.alert(
+      "Logout Confirmation",
+      "Are you sure you want to logout?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Logout", onPress: () => navigation.navigate("School Assistant") }
+      ]
+    );
   };
 
   const handleStartBus = () => {
@@ -113,7 +120,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    paddingHorizontal: 20,
+    padding: 20,
   },
   title: {
     fontSize: 24,
@@ -132,7 +139,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     paddingBottom: 10,
-    paddingTop: 4, // Ensure you provide a value here
   },
   adminName: {
     flexDirection: "row",

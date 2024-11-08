@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TouchableHighlightBase } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -21,23 +21,24 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.text}>Choose your option</Text>
       <CustomButton destination="Admin Login" icon="user" label="Admin" />
       <CustomButton destination="Teacher Login" icon="graduation-cap" label="Teacher" />
-      <CustomButton destination="Student & Parent Login" icon="child" label="Student & Parent" />
+      <CustomButton destination="Student & Parent Login" icon="child" label="Student" />
       <CustomButton destination="Driver Login" icon="car" label="Driver" />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1, // This makes the ScrollView take the full height
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
+    paddingBottom: 20, // Add some bottom padding to avoid cutting off the last button
   },
   text: {
     fontSize: 24,
@@ -62,9 +63,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     margin: 7,
-    width:'30%',
+    width: '30%',
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
   },
   label: {
     color: '#fff',

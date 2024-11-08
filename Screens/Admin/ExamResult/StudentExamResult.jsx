@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { StyleSheet, View, ScrollView, Text } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Dimensions} from "react-native";
 import { Table, Row } from "react-native-table-component";
 
 const StudentResultCard = ({ route }) => {
-  const { studentName, gender, selectedClass, selectedSection } = route.params || {};
-
+  const { studentName, gender, selectedClass, selectedSection, TestName } = route.params || {};
   const [testData, setTestData] = useState({});
-  const subjects = ['Telugu', 'Hindi', 'English', 'Maths', 'Science', 'Social'];
-
+  const screenWidth = Dimensions.get("window").width;
+  const widthArr = [
+    screenWidth * 0.1,   // SI no.
+    screenWidth * 0.4,   // Subject
+    screenWidth * 0.25,  // Obtain marks
+    screenWidth * 0.25,  // Total marks
+  ];
   useEffect(() => {
     const fetchTestData = async () => {
       try {
@@ -28,34 +32,50 @@ const StudentResultCard = ({ route }) => {
   }, [selectedClass, selectedSection]);
 
   const renderTables = () => {
+    const predefinedSubjectOrder = [
+      "Telugu", 
+      "Hindi", 
+      "English", 
+      "Mathematics", 
+      "Science", 
+      "Social", 
+      "Computer", 
+      "General Knowledge", 
+      "Drawing"
+    ];
+  
     return Object.keys(testData).map((testName, idx) => {
-      const { conductedOn = {}, studentResults = {} } = testData[testName] || {};
+      const { conductedOn = {}, studentResults = {} } = testData[testName] || {}; 
       const { firstDate, lastDate } = conductedOn;
-      const marksData = studentResults[studentName] || {};
-      const studentResultsArray = subjects.map((subject, index) => {
-        const obtainMarks = marksData[subject.toLowerCase()] || 0;
-        return {
+      
+      const studentData = studentResults[studentName] || {};
+      const { subjects = {}, subjectMaxMarks={}, totalMarks = 0, obtainMarks = 0, percentage = 0 } = studentData;
+  
+      // Convert subjects into an ordered array based on predefinedSubjectOrder
+      const studentResultsArray = predefinedSubjectOrder
+        .filter(subject => subjects.hasOwnProperty(subject)) // Only include subjects that exist in the data
+        .map((subject, index) => ({
           SINo: index + 1,
           Subject: subject,
-          "Obtain marks": obtainMarks,
-          "Total marks": 100,
-        };
-      });
-
-      const totalMarks = marksData.totalMarks || 0;
-      const obtainedMarks = marksData.obtainMarks || 0;
-      const percentage = marksData.percentage || 0;
-
+          "Obtain marks": subjects[subject],
+          "Total marks": subjectMaxMarks[subject],
+        }));
+    
       return (
         <View key={idx} style={styles.tableContainer}>
           <View style={styles.textContainer1}>
             <Text style={styles.text}>Exam Name: {testName}</Text>
-            <Text style={styles.text}>Conducted on: {firstDate} - {lastDate}</Text>
+            <Text style={styles.text}>Conducted on:: {firstDate} : {lastDate}</Text>
           </View>
           <ScrollView horizontal={true}>
             <View>
               <Table borderStyle={{ borderColor: "#C10036" }}>
-                <Row data={["SI no.", "Subject", "Obtain marks", "Total marks"]} widthArr={[30, 150, 80, 80]} style={styles.header} textStyle={styles.headerText} />
+                <Row 
+                  data={["SI no.", "Subject", "Obtain marks", "Total marks"]} 
+                  widthArr={widthArr} 
+                  style={styles.header} 
+                  textStyle={styles.headerText} 
+                />
               </Table>
               <ScrollView style={styles.dataWrapper}>
                 <Table>
@@ -64,7 +84,7 @@ const StudentResultCard = ({ route }) => {
                       <Row
                         key={rowIndex}
                         data={Object.values(rowData)}
-                        widthArr={[30, 150, 80, 80]}
+                        widthArr={widthArr}
                         style={{
                           ...styles.row,
                           backgroundColor: rowIndex % 2 === 1 ? "#eff0f2" : ""
@@ -80,13 +100,14 @@ const StudentResultCard = ({ route }) => {
             </View>
           </ScrollView>
           <View style={styles.textContainer}>
-            <Text style={styles.text}>Total Marks: {obtainedMarks}/{totalMarks}</Text>
+            <Text style={styles.text}>Total Marks: {obtainMarks}/{totalMarks}</Text>
             <Text style={styles.text}>Percentage: {percentage}%</Text>
           </View>
         </View>
       );
     });
   };
+  
 
   return (
     <View style={styles.container}>
@@ -125,7 +146,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     padding: 10,
-    paddingBottom: 60,
   },
   rowContainer: {
     flexDirection: "row",
@@ -142,13 +162,13 @@ const styles = StyleSheet.create({
     width: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold",
     color: "#333",
     marginRight: 5,
   },
   value: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#555",
   },
   textContainer1: {

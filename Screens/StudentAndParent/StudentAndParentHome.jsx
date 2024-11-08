@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert ,ScrollView} from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const StudentAndTeacherHome = ({ navigation, route }) => {
@@ -8,7 +8,21 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
   const [fullName] = useState(`${surname} ${name}`);
 
   const handleLogout = () => {
-    navigation.navigate("School Assistant");
+    Alert.alert(
+      "Logout Confirmation",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: () => navigation.navigate("School Assistant"),
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const features = [
@@ -73,8 +87,8 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
         const studentData = {
           selectedClass,
           selectedSection: selectedSection,
-          studentName: name,
-          gender: gender,
+          studentName: fullName,
+          gender: gender,  
         };
         navigation.navigate(destination, studentData);
       } else if (destination === 'Student Profile') {
@@ -118,6 +132,7 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
         </View>
       </View>
 
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.content}>
         <View style={styles.featuresContainer}>
           {features.map((feature) => (
@@ -130,6 +145,7 @@ const StudentAndTeacherHome = ({ navigation, route }) => {
           ))}
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 };

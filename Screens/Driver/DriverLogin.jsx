@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
@@ -17,7 +17,6 @@ const DriverLogin = ({ navigation }) => {
 
     setLoading(true);
 
-    // Fetch driver data from Firebase using Axios
     axios.get('https://studentassistant-18fdd-default-rtdb.firebaseio.com/accounts/Driver.json')
       .then(response => {
         const drivers = response.data;
@@ -25,15 +24,12 @@ const DriverLogin = ({ navigation }) => {
           throw new Error('No drivers found');
         }
 
-        // Trim inputs to remove leading/trailing spaces
         const trimmedUsername = username.trim();
         const trimmedPassword = password.trim();
 
-        // Check if there's a driver with the entered username
         const driver = Object.values(drivers).find(driver => driver.userName === trimmedUsername);
 
         if (driver && driver.password === trimmedPassword) {
-          // Navigate to driver home on successful login
           navigation.navigate('Driver Home', driver);
         } else {
           Alert.alert('Invalid credentials', 'Please enter correct username and password');
@@ -53,12 +49,10 @@ const DriverLogin = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Driver icon */}
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Ionicons name="car-sport-outline" size={100} color="#007bff" style={styles.icon} />
       <Text style={styles.title}>Driver</Text>
 
-      {/* Username input */}
       <Text style={styles.label}>Username:</Text>
       <TextInput
         style={styles.input}
@@ -68,7 +62,6 @@ const DriverLogin = ({ navigation }) => {
         autoCapitalize="none"
       />
 
-      {/* Password input */}
       <Text style={styles.label}>Password:</Text>
       <View style={styles.passwordContainer}>
         <TextInput
@@ -87,17 +80,16 @@ const DriverLogin = ({ navigation }) => {
         />
       </View>
 
-      {/* Login button */}
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonTitle}>Login</Text>}
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

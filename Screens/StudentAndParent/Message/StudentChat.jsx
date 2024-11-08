@@ -12,18 +12,28 @@ const ChatContent = ({ route, navigation }) => {
 
   useEffect(() => {
     const fetchMessages = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(
-          `https://studentassistant-18fdd-default-rtdb.firebaseio.com/chats/${className}%20/%20${section}.json`
-        );
-        if (response.data) {
-          const fetchedMessages = Object.values(response.data);
-          // Sort messages by timestamp
-          fetchedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-          setMessages(fetchedMessages);
-        } else {
-          setMessages([]);
-        }
+        const [specificResponse, allClassesResponse] = await Promise.all([
+          axios.get(
+            `https://studentassistant-18fdd-default-rtdb.firebaseio.com/chats/${className}%20/%20${section}.json`
+          ),
+          axios.get(
+            `https://studentassistant-18fdd-default-rtdb.firebaseio.com/chats/All%20Classes.json`
+          ),
+        ]);
+
+        const specificMessages = specificResponse.data
+          ? Object.values(specificResponse.data)
+          : [];
+        const allClassesMessages = allClassesResponse.data
+          ? Object.values(allClassesResponse.data)
+          : [];
+
+        // Combine and sort messages by timestamp
+        const combinedMessages = [...specificMessages, ...allClassesMessages];
+        combinedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        setMessages(combinedMessages);
       } catch (error) {
         console.error('Error fetching messages:', error);
       } finally {
@@ -116,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    paddingTop: 36, // Adjust for header
   },
   header: {
     flexDirection: 'row',

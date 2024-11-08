@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 5,
     textAlign: 'center',
